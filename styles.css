@@ -253,7 +253,7 @@ body.dark .input {
 .section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 6rem 1rem 2rem 1rem; /* Match navbar padding */
+  padding: 6rem 1rem 2rem 1rem; 
   box-sizing: border-box;
 }
 .section-title {
@@ -264,9 +264,8 @@ body.dark .input {
   text-align: center;
 }
 
-/* Reduce gap between sections */
 .section + .section {
-  margin-top: 2.5rem; /* Increased gap between Chef's Specials and Menu */
+  margin-top: 1.5rem; 
 }
 
 /* Checkout Modal Delivery Form */
@@ -545,7 +544,7 @@ body.dark .cart-footer {
   background: #f5f6fa;
 }
 
-/* Responsive Enhancements */
+
 @media (max-width: 900px) {
   .navbar {
     flex-direction: row;
@@ -558,7 +557,7 @@ body.dark .cart-footer {
     padding-right: 0.5rem;
   }
   .section + .section {
-    margin-top: 1.5rem; /* Slightly less gap on tablet */
+    margin-top: 1.5rem; 
   }
 }
 @media (max-width: 600px) {
@@ -585,11 +584,11 @@ body.dark .cart-footer {
     padding-right: 0.5rem;
   }
   .section + .section {
-    margin-top: 1rem; /* Smaller gap on mobile */
+    margin-top: 1rem; 
   }
 }
 
-/* Micro-interactions */
+
 .btn, .icon-btn, .card, .add-cart-btn {
   outline: none;
 }
@@ -597,10 +596,9 @@ body.dark .cart-footer {
   transform: scale(0.97);
 }
 
-/* Hide elements */
+/* Hidden elements */
 .hidden { display: none !important; }
 
-/* Fly-to-cart animation */
 @keyframes fly-to-cart {
   0% { transform: scale(1) translateY(0); opacity: 1; }
   80% { transform: scale(1.2) translateY(-40px); opacity: 0.7; }
@@ -610,7 +608,7 @@ body.dark .cart-footer {
   animation: fly-to-cart 0.7s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Chef's Specials Carousel: Center and enlarge image */
+
 .carousel-track > div, .carousel-track .flex {
   justify-content: center !important;
   align-items: center !important;
@@ -631,7 +629,6 @@ body.dark .cart-footer {
   text-align: center;
 }
 
-/* Cart Drawer: Fix item layout and prevent horizontal overflow */
 .cart-items {
   overflow-y: auto;
   overflow-x: hidden;
