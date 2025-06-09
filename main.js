@@ -68,7 +68,9 @@ googleSignin.onclick = async () => {
     await signInWithPopup(auth, googleProvider);
     hideAuthModal();
   } catch (err) {
-    alert(err.message);
+    if (err.code !== 'auth/cancelled-popup-request') {
+      alert(err.message);
+    }
   }
 };
 
@@ -329,12 +331,42 @@ checkoutBtn.onclick = () => {
 closeCheckout.onclick = () => checkoutModal.classList.add('hidden');
 checkoutModal.onclick = e => { if (e.target === checkoutModal) checkoutModal.classList.add('hidden'); };
 
+function initAddressAutocomplete() {
+  const input = document.getElementById('delivery-address');
+  if (input && window.google && window.google.maps && window.google.maps.places) {
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['address'],
+      componentRestrictions: { country: 'ng' } // Adjust country code as needed
+    });
+    autocomplete.setFields(['formatted_address']);
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      input.value = place.formatted_address || input.value;
+    });
+  }
+}
+
 function showCheckoutStep() {
   checkoutSteps.innerHTML = '';
   if (checkoutStep === 0) {
     // Delivery address step
     let savedAddress = localStorage.getItem('savedAddress') || '';
     checkoutSteps.innerHTML = `
+      <div class="checkout-progress">
+        <div class="checkout-step completed">
+          <span>1</span>
+          <span class="checkout-step-label">Order Type</span>
+        </div>
+        <div class="checkout-step active">
+          <span>2</span>
+          <span class="checkout-step-label">Delivery</span>
+        </div>
+        <div class="checkout-step">
+          <span>3</span>
+          <span class="checkout-step-label">Payment</span>
+        </div>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-4">Delivery Address</h3>
       <form id="delivery-form" class="checkout-form">
         <div class="checkout-form-group">
           <label for="delivery-address">Delivery Address</label>
@@ -344,10 +376,13 @@ function showCheckoutStep() {
           <label><input type="checkbox" id="save-address" ${savedAddress ? 'checked' : ''}/> Save address for next time</label>
         </div>
         <div class="checkout-btn-group">
-          <button type="submit" class="checkout-btn checkout-btn-primary">Continue</button>
+          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = 0; showCheckoutStep();">Back</button>
+          <button type="submit" class="checkout-btn checkout-btn-primary">Continue to Payment</button>
         </div>
       </form>
     `;
+    initAddressAutocomplete(); // Initialize autocomplete after rendering the input
+
     document.getElementById('delivery-form').onsubmit = e => {
       e.preventDefault();
       const address = document.getElementById('delivery-address').value;
@@ -355,7 +390,7 @@ function showCheckoutStep() {
       if (save) localStorage.setItem('savedAddress', address);
       else localStorage.removeItem('savedAddress');
       orderData.address = address;
-      checkoutStep = 1;
+      checkoutStep = 2;
       showCheckoutStep();
     };
   } else if (checkoutStep === 1) {
