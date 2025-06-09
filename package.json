@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "autoprefixer": "^10.4.21",
-    "firebase-admin": "^13.4.0",
-    "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.1.8"
-  }
-}
