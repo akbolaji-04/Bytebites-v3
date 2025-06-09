@@ -333,44 +333,123 @@ function showCheckoutStep() {
   const steps = [
     // Step 1: Delivery or Pickup
     `
+      <div class="checkout-progress">
+        <div class="checkout-step active">
+          <span>1</span>
+          <span class="checkout-step-label">Order Type</span>
+        </div>
+        <div class="checkout-step">
+          <span>2</span>
+          <span class="checkout-step-label">${orderData.type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
+        </div>
+        <div class="checkout-step">
+          <span>3</span>
+          <span class="checkout-step-label">Payment</span>
+        </div>
+      </div>
       <h3 class="font-display text-xl font-bold mb-4">How would you like to receive your order?</h3>
-      <div class="flex gap-4 mb-6">
-        <button class="step-btn px-6 py-3 bg-accent text-white rounded-2xl font-semibold shadow-soft hover:bg-accent-dark transition" data-type="delivery">Delivery</button>
-        <button class="step-btn px-6 py-3 bg-secondary text-white rounded-2xl font-semibold shadow-soft hover:bg-secondary-dark transition" data-type="pickup">Pickup</button>
+      <div class="checkout-btn-group">
+        <button class="checkout-btn checkout-btn-primary" data-type="delivery">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          Delivery
+        </button>
+        <button class="checkout-btn checkout-btn-secondary" data-type="pickup">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Pickup
+        </button>
       </div>
     `,
     // Step 2: Address (if delivery)
     `
+      <div class="checkout-progress">
+        <div class="checkout-step completed">
+          <span>1</span>
+          <span class="checkout-step-label">Order Type</span>
+        </div>
+        <div class="checkout-step active">
+          <span>2</span>
+          <span class="checkout-step-label">Delivery</span>
+        </div>
+        <div class="checkout-step">
+          <span>3</span>
+          <span class="checkout-step-label">Payment</span>
+        </div>
+      </div>
       <h3 class="font-display text-xl font-bold mb-4">Delivery Address</h3>
-      <form id="address-form" class="space-y-4">
-        <input type="text" id="address-name" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="Full Name" required />
-        <input type="text" id="address-line" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="Street Address" required />
-        <input type="text" id="address-city" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="City" required />
-        <input type="text" id="address-zip" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="ZIP Code" required />
-        <button type="submit" class="w-full py-2 bg-accent text-white rounded-2xl font-semibold shadow-soft hover:bg-accent-dark transition">Continue</button>
+      <form id="address-form" class="checkout-form">
+        <div class="checkout-form-group">
+          <label for="address-name">Full Name</label>
+          <input type="text" id="address-name" class="checkout-input" placeholder="Enter your full name" required />
+        </div>
+        <div class="checkout-form-group">
+          <label for="address-line">Street Address</label>
+          <input type="text" id="address-line" class="checkout-input" placeholder="Enter your street address" required />
+        </div>
+        <div class="checkout-form-group">
+          <label for="address-city">City</label>
+          <input type="text" id="address-city" class="checkout-input" placeholder="Enter your city" required />
+        </div>
+        <div class="checkout-form-group">
+          <label for="address-zip">ZIP Code</label>
+          <input type="text" id="address-zip" class="checkout-input" placeholder="Enter your ZIP code" required />
+        </div>
+        <div class="checkout-btn-group">
+          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = 0; showCheckoutStep();">Back</button>
+          <button type="submit" class="checkout-btn checkout-btn-primary">Continue to Payment</button>
+        </div>
       </form>
     `,
-    // Step 3: Payment (dummy)
+    // Step 3: Payment
     `
-      <h3 class="font-display text-xl font-bold mb-4">Payment</h3>
-      <form id="payment-form" class="space-y-4">
-        <input type="text" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="Card Number" required maxlength="19"/>
-        <div class="flex gap-4">
-          <input type="text" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="MM/YY" required maxlength="5"/>
-          <input type="text" class="w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark bg-neutral-light dark:bg-neutral-dark focus:ring-2 focus:ring-accent outline-none" placeholder="CVC" required maxlength="4"/>
+      <div class="checkout-progress">
+        <div class="checkout-step completed">
+          <span>1</span>
+          <span class="checkout-step-label">Order Type</span>
         </div>
-        <button type="submit" class="w-full py-2 bg-secondary text-white rounded-2xl font-semibold shadow-soft hover:bg-secondary-dark transition">Pay & Place Order</button>
+        <div class="checkout-step completed">
+          <span>2</span>
+          <span class="checkout-step-label">${orderData.type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
+        </div>
+        <div class="checkout-step active">
+          <span>3</span>
+          <span class="checkout-step-label">Payment</span>
+        </div>
+      </div>
+      <h3 class="font-display text-xl font-bold mb-4">Payment Details</h3>
+      <form id="payment-form" class="checkout-form">
+        <div class="checkout-form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" class="checkout-input" placeholder="1234 5678 9012 3456" required maxlength="19" />
+        </div>
+        <div class="checkout-form-group">
+          <label>Expiry & CVC</label>
+          <div class="checkout-btn-group">
+            <input type="text" class="checkout-input" placeholder="MM/YY" required maxlength="5" />
+            <input type="text" class="checkout-input" placeholder="CVC" required maxlength="4" />
+          </div>
+        </div>
+        <div class="checkout-btn-group">
+          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = orderData.type === 'delivery' ? 1 : 0; showCheckoutStep();">Back</button>
+          <button type="submit" class="checkout-btn checkout-btn-primary">Place Order</button>
+        </div>
       </form>
     `
   ];
   checkoutSteps.innerHTML = steps[checkoutStep];
+  
   if (checkoutStep === 0) {
-    document.querySelectorAll('.step-btn').forEach(btn => {
-      btn.onclick = () => {
-        orderData.type = btn.dataset.type;
-        checkoutStep = (orderData.type === 'delivery') ? 1 : 2;
-        showCheckoutStep();
-      };
+    document.querySelectorAll('.checkout-btn').forEach(btn => {
+      if (btn.dataset.type) {
+        btn.onclick = () => {
+          orderData.type = btn.dataset.type;
+          checkoutStep = (orderData.type === 'delivery') ? 1 : 2;
+          showCheckoutStep();
+        };
+      }
     });
   } else if (checkoutStep === 1) {
     document.getElementById('address-form').onsubmit = e => {
