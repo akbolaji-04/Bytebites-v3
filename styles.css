@@ -68,7 +68,7 @@ body.dark .navbar {
   flex-wrap: nowrap;
 }
 .navbar img {
-  max-height: 2.1rem;
+  max-height: 1.5rem;
   width: auto;
   display: block;
 }
