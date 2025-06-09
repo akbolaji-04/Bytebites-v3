@@ -7,6 +7,7 @@ body {
   margin: 0;
   min-height: 100vh;
   transition: background 0.3s, color 0.3s;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 :root {
@@ -30,9 +31,11 @@ body.dark {
 /* Navbar */
 .navbar {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 2rem;
+  flex-wrap: nowrap;
+  padding: 1.2rem 1rem;
   background: #fff;
   box-shadow: var(--shadow);
   position: fixed;
@@ -40,20 +43,25 @@ body.dark {
   z-index: 30;
   top: 0;
   left: 0;
+  right: 0;
+  box-sizing: border-box;
+  min-height: 64px;
 }
 body.dark .navbar {
   background: var(--neutral-dark);
 }
 .logo {
   font-family: 'Poppins', Arial, sans-serif;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: var(--accent);
+  white-space: nowrap;
 }
 .navbar-left, .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 0.7rem;
+  flex-wrap: nowrap;
 }
 
 /* Buttons */
@@ -62,7 +70,7 @@ body.dark .navbar {
   border: none;
   border-radius: var(--radius);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -241,7 +249,8 @@ body.dark .input {
 .section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 6rem 1.5rem 2rem 1.5rem;
+  padding: 6rem 1rem 2rem 1rem; /* Match navbar padding */
+  box-sizing: border-box;
 }
 .section-title {
   font-family: 'Poppins', Arial, sans-serif;
@@ -253,7 +262,16 @@ body.dark .input {
 
 /* Reduce gap between sections */
 .section + .section {
-  margin-top: 1.5rem;
+  margin-top: 2.5rem; /* Increased gap between Chef's Specials and Menu */
+}
+
+/* Checkout Modal Delivery Form */
+.checkout-form-group label {
+  font-weight: 500;
+  color: #666;
+}
+.checkout-form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
 }
 
 /* Carousel */
@@ -525,86 +543,43 @@ body.dark .cart-footer {
 
 /* Responsive Enhancements */
 @media (max-width: 900px) {
+  .navbar {
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 0.5rem;
+  }
   .section {
+    max-width: 100vw;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    padding-top: 2.2rem;
-    padding-bottom: 1rem;
   }
-  .menu-grid {
-    grid-template-columns: 1fr;
-  }
-  .card {
-    min-height: 340px;
-  }
-  .carousel {
-    min-height: 220px;
-  }
-  .cart-drawer {
-    width: 100vw;
-    max-width: 100vw;
-  }
-  #special-modal .modal-content {
-    padding: 1.2rem 0.5rem 1rem 0.5rem;
-    width: 98vw;
-    max-width: 98vw;
+  .section + .section {
+    margin-top: 1.5rem; /* Slightly less gap on tablet */
   }
 }
 @media (max-width: 600px) {
   .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem 0.5rem;
+    padding: 0.7rem 0.5rem;
+    min-height: 48px;
   }
   .logo {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
   }
   .navbar-left, .navbar-right {
-    gap: 0.7rem;
+    gap: 0.4rem;
   }
   .btn, .btn-accent, .btn-secondary {
-    font-size: 0.95rem;
-    padding: 0.7rem 1rem;
-    min-width: 120px;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+    min-width: 70px;
   }
-  .modal-content {
-    padding: 1.2rem 0.5rem 1rem 0.5rem;
-    max-width: 98vw;
+  .section {
+    max-width: 100vw;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
-  .section-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.7rem;
-  }
-  .card {
-    padding: 1rem 0.5rem 1rem 0.5rem;
-  }
-  .card-img {
-    height: 140px;
-  }
-  .cart-header, .cart-footer {
-    padding: 1rem 0.5rem;
-  }
-  .cart-items {
-    padding: 1rem 0.5rem;
-  }
-  .carousel {
-    min-height: 140px;
-  }
-  #special-modal .special-img {
-    width: 120px;
-    height: 120px;
-  }
-  .cart-items > div {
-    gap: 0.5rem;
-    margin-bottom: 0.7rem;
-  }
-  .cart-img {
-    width: 44px;
-    height: 44px;
-  }
-  .carousel-img {
-    width: 140px;
-    height: 140px;
+  .section + .section {
+    margin-top: 1rem; /* Smaller gap on mobile */
   }
 }
 
@@ -745,11 +720,6 @@ body.dark .cart-footer {
     max-width: 80px;
     font-size: 0.95rem;
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 /* Checkout Modal */
@@ -909,4 +879,4 @@ body.dark .checkout-btn-secondary {
 
 body.dark .checkout-btn-secondary:hover {
   background: #444;
-} 
+}

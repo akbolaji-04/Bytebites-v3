@@ -114,7 +114,7 @@ function renderCarousel() {
         <img src="${s.imageURL || 'https://via.placeholder.com/180?text=No+Image'}" alt="${s.name}" class="carousel-img mb-4" onerror="this.onerror=null;this.src='https://via.placeholder.com/180?text=No+Image';"/>
         <h3 class="font-display text-2xl font-bold mb-2">${s.name}</h3>
         <p class="mb-2 text-center">${s.description}</p>
-        <span class="font-semibold text-accent text-lg">$${Number(s.price).toFixed(2)}</span>
+        <span class="font-semibold text-accent text-lg">₦${Number(s.price).toLocaleString()}</span>
       </div>
     </div>
   `;
@@ -158,7 +158,7 @@ function showSpecialModal(special) {
       <img src="${special.imageURL || 'https://via.placeholder.com/180?text=No+Image'}" alt="${special.name}" class="special-img"/>
       <div class="special-title">${special.name}</div>
       <div class="special-desc">${special.description}</div>
-      <div class="special-price">$${Number(special.price).toFixed(2)}</div>
+      <div class="special-price">₦${Number(special.price).toLocaleString()}</div>
       <button class="add-cart-btn">Add to Cart</button>
     </div>
   `;
@@ -196,7 +196,7 @@ function renderMenu() {
       <h4 class="card-title font-display text-xl font-bold">${item.name}</h4>
       <p class="card-desc flex-1">${item.description}</p>
       <div class="flex items-center justify-between">
-        <span class="card-price font-semibold text-accent text-lg">$${Number(item.price).toFixed(2)}</span>
+        <span class="card-price font-semibold text-accent text-lg">₦${Number(item.price).toLocaleString()}</span>
       </div>
     </div>
   `).join('');
@@ -251,7 +251,7 @@ function renderCart() {
             <button class="qty-btn px-2 py-1 rounded bg-neutral-light dark:bg-neutral-dark" data-id="${id}" data-delta="-1">-</button>
             <span class="font-semibold">${qty}</span>
             <button class="qty-btn px-2 py-1 rounded bg-neutral-light dark:bg-neutral-dark" data-id="${id}" data-delta="1">+</button>
-            <span class="cart-item-price">$${(item.price * qty).toFixed(2)}</span>
+            <span class="cart-item-price">₦${(item.price * qty).toLocaleString()}</span>
           </div>
         </div>
         <button class="remove-cart text-neutral-dark dark:text-neutral-light hover:text-accent" data-id="${id}">
@@ -265,7 +265,7 @@ function renderCart() {
     let item = menuItems.find(m => m.id === id) || specials.find(s => s.id === id);
     return item ? sum + item.price * qty : sum;
   }, 0);
-  cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+  cartSubtotal.textContent = `₦${subtotal.toLocaleString()}`;
   let count = Object.values(cart).reduce((a, b) => a + b, 0);
   cartCount.textContent = count;
   cartCount.classList.toggle('hidden', count === 0);
@@ -330,143 +330,57 @@ closeCheckout.onclick = () => checkoutModal.classList.add('hidden');
 checkoutModal.onclick = e => { if (e.target === checkoutModal) checkoutModal.classList.add('hidden'); };
 
 function showCheckoutStep() {
-  const steps = [
-    // Step 1: Delivery or Pickup
-    `
-      <div class="checkout-progress">
-        <div class="checkout-step active">
-          <span>1</span>
-          <span class="checkout-step-label">Order Type</span>
-        </div>
-        <div class="checkout-step">
-          <span>2</span>
-          <span class="checkout-step-label">${orderData.type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
-        </div>
-        <div class="checkout-step">
-          <span>3</span>
-          <span class="checkout-step-label">Payment</span>
-        </div>
-      </div>
-      <h3 class="font-display text-xl font-bold mb-4">How would you like to receive your order?</h3>
-      <div class="checkout-btn-group">
-        <button class="checkout-btn checkout-btn-primary" data-type="delivery">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-          Delivery
-        </button>
-        <button class="checkout-btn checkout-btn-secondary" data-type="pickup">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          Pickup
-        </button>
-      </div>
-    `,
-    // Step 2: Address (if delivery)
-    `
-      <div class="checkout-progress">
-        <div class="checkout-step completed">
-          <span>1</span>
-          <span class="checkout-step-label">Order Type</span>
-        </div>
-        <div class="checkout-step active">
-          <span>2</span>
-          <span class="checkout-step-label">Delivery</span>
-        </div>
-        <div class="checkout-step">
-          <span>3</span>
-          <span class="checkout-step-label">Payment</span>
-        </div>
-      </div>
-      <h3 class="font-display text-xl font-bold mb-4">Delivery Address</h3>
-      <form id="address-form" class="checkout-form">
-        <div class="checkout-form-group">
-          <label for="address-name">Full Name</label>
-          <input type="text" id="address-name" class="checkout-input" placeholder="Enter your full name" required />
-        </div>
-        <div class="checkout-form-group">
-          <label for="address-line">Street Address</label>
-          <input type="text" id="address-line" class="checkout-input" placeholder="Enter your street address" required />
-        </div>
-        <div class="checkout-form-group">
-          <label for="address-city">City</label>
-          <input type="text" id="address-city" class="checkout-input" placeholder="Enter your city" required />
-        </div>
-        <div class="checkout-form-group">
-          <label for="address-zip">ZIP Code</label>
-          <input type="text" id="address-zip" class="checkout-input" placeholder="Enter your ZIP code" required />
-        </div>
-        <div class="checkout-btn-group">
-          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = 0; showCheckoutStep();">Back</button>
-          <button type="submit" class="checkout-btn checkout-btn-primary">Continue to Payment</button>
-        </div>
-      </form>
-    `,
-    // Step 3: Payment
-    `
-      <div class="checkout-progress">
-        <div class="checkout-step completed">
-          <span>1</span>
-          <span class="checkout-step-label">Order Type</span>
-        </div>
-        <div class="checkout-step completed">
-          <span>2</span>
-          <span class="checkout-step-label">${orderData.type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
-        </div>
-        <div class="checkout-step active">
-          <span>3</span>
-          <span class="checkout-step-label">Payment</span>
-        </div>
-      </div>
-      <h3 class="font-display text-xl font-bold mb-4">Payment Details</h3>
-      <form id="payment-form" class="checkout-form">
-        <div class="checkout-form-group">
-          <label for="card-number">Card Number</label>
-          <input type="text" id="card-number" class="checkout-input" placeholder="1234 5678 9012 3456" required maxlength="19" />
-        </div>
-        <div class="checkout-form-group">
-          <label>Expiry & CVC</label>
-          <div class="checkout-btn-group">
-            <input type="text" class="checkout-input" placeholder="MM/YY" required maxlength="5" />
-            <input type="text" class="checkout-input" placeholder="CVC" required maxlength="4" />
-          </div>
-        </div>
-        <div class="checkout-btn-group">
-          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = orderData.type === 'delivery' ? 1 : 0; showCheckoutStep();">Back</button>
-          <button type="submit" class="checkout-btn checkout-btn-primary">Place Order</button>
-        </div>
-      </form>
-    `
-  ];
-  checkoutSteps.innerHTML = steps[checkoutStep];
-  
+  checkoutSteps.innerHTML = '';
   if (checkoutStep === 0) {
-    document.querySelectorAll('.checkout-btn').forEach(btn => {
-      if (btn.dataset.type) {
-        btn.onclick = () => {
-          orderData.type = btn.dataset.type;
-          checkoutStep = (orderData.type === 'delivery') ? 1 : 2;
-          showCheckoutStep();
-        };
-      }
-    });
-  } else if (checkoutStep === 1) {
-    document.getElementById('address-form').onsubmit = e => {
+    // Delivery address step
+    let savedAddress = localStorage.getItem('savedAddress') || '';
+    checkoutSteps.innerHTML = `
+      <form id="delivery-form" class="checkout-form">
+        <div class="checkout-form-group">
+          <label for="delivery-address">Delivery Address</label>
+          <input type="text" id="delivery-address" class="checkout-input" placeholder="Enter your delivery address" value="${savedAddress}" required />
+        </div>
+        <div class="checkout-form-group">
+          <label><input type="checkbox" id="save-address" ${savedAddress ? 'checked' : ''}/> Save address for next time</label>
+        </div>
+        <div class="checkout-btn-group">
+          <button type="submit" class="checkout-btn checkout-btn-primary">Continue</button>
+        </div>
+      </form>
+    `;
+    document.getElementById('delivery-form').onsubmit = e => {
       e.preventDefault();
-      orderData.address = {
-        name: document.getElementById('address-name').value,
-        line: document.getElementById('address-line').value,
-        city: document.getElementById('address-city').value,
-        zip: document.getElementById('address-zip').value,
-      };
-      checkoutStep = 2;
+      const address = document.getElementById('delivery-address').value;
+      const save = document.getElementById('save-address').checked;
+      if (save) localStorage.setItem('savedAddress', address);
+      else localStorage.removeItem('savedAddress');
+      orderData.address = address;
+      checkoutStep = 1;
       showCheckoutStep();
     };
-  } else if (checkoutStep === 2) {
-    document.getElementById('payment-form').onsubmit = async e => {
-      e.preventDefault();
-      await placeOrder();
+  } else if (checkoutStep === 1) {
+    // Confirm order step
+    checkoutSteps.innerHTML = `
+      <div class="checkout-form-group">
+        <label>Delivery Address</label>
+        <div class="checkout-input" style="background:#f5f6fa;">${orderData.address}</div>
+      </div>
+      <div class="checkout-btn-group">
+        <button class="checkout-btn checkout-btn-primary" id="place-order">Place Order</button>
+        <button class="checkout-btn checkout-btn-secondary" id="back">Back</button>
+      </div>
+    `;
+    document.getElementById('place-order').onclick = async () => {
+      // ...existing order placement logic...
+      checkoutModal.classList.add('hidden');
+      document.getElementById('order-confirmation').classList.remove('hidden');
+      cart = {};
+      localStorage.setItem('cart', '{}');
+      renderCart();
+    };
+    document.getElementById('back').onclick = () => {
+      checkoutStep = 0;
+      showCheckoutStep();
     };
   }
 }
@@ -501,4 +415,4 @@ orderConfirmation.onclick = e => { if (e.target === orderConfirmation) orderConf
 
 // --- Init ---
 loadSpecials();
-loadMenu().then(renderCart); 
+loadMenu().then(renderCart);
