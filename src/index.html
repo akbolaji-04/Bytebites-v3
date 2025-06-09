@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ByteBites - Epicurean Eats</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <span class="logo">ByteBites</span>
+        <button id="dark-toggle" class="icon-btn">
+          <svg id="dark-icon" class="icon" fill="none" stroke="currentColor" stroke-width="2"></svg>
+        </button>
+      </div>
+      <div class="navbar-right">
+        <button id="cart-btn" class="icon-btn cart-btn">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
+            <use href="#cart-icon"></use>
+          </svg>
+          <span id="cart-count" class="cart-count hidden"></span>
+        </button>
+        <button id="auth-btn" class="btn btn-secondary">Sign In</button>
+        <img id="user-avatar" class="avatar hidden" />
+      </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="close-auth" class="icon-btn close-btn">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
+            <use href="#close-icon"></use>
+          </svg>
+        </button>
+        <h2 class="modal-title" id="auth-title">Sign In</h2>
+        <form id="auth-form" class="form">
+          <input type="email" id="auth-email" class="input" placeholder="Email" required />
+          <input type="password" id="auth-password" class="input" placeholder="Password" required />
+          <button type="submit" class="btn btn-accent">Continue</button>
+        </form>
+        <div class="divider">or</div>
+        <button id="google-signin" class="btn btn-google">
+          <svg class="icon-google" viewBox="0 0 48 48"><use href="#google-icon"></use></svg>
+          Continue with Google
+        </button>
+        <p class="modal-footer">
+          <span id="toggle-auth-mode" class="link">Don't have an account? Sign Up</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Chef's Special Carousel -->
+    <section class="section">
+      <h2 class="section-title">Chef's Specials</h2>
+      <div id="specials-carousel" class="carousel">
+        <div id="carousel-track" class="carousel-track"></div>
+        <button id="carousel-prev" class="carousel-btn left">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#chevron-left"></use></svg>
+        </button>
+        <button id="carousel-next" class="carousel-btn right">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#chevron-right"></use></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Menu Grid -->
+    <section class="section">
+      <h2 class="section-title">Menu</h2>
+      <div id="menu-grid" class="menu-grid"></div>
+    </section>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="cart-drawer">
+      <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button id="close-cart" class="icon-btn close-btn">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#close-icon"></use></svg>
+        </button>
+      </div>
+      <div id="cart-items" class="cart-items"></div>
+      <div class="cart-footer">
+        <div class="cart-subtotal-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="cart-subtotal"></span>
+        </div>
+        <button id="checkout-btn" class="btn btn-accent">Checkout</button>
+      </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal hidden">
+      <div class="modal-content checkout-modal-content">
+        <button id="close-checkout" class="icon-btn close-btn">
+          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#close-icon"></use></svg>
+        </button>
+        <div id="checkout-steps"></div>
+      </div>
+    </div>
+
+    <!-- Order Confirmation -->
+    <div id="order-confirmation" class="modal hidden">
+      <div class="modal-content order-confirmation-content">
+        <h2 class="modal-title accent">Order Placed!</h2>
+        <p>Thank you for your order. You can check your order status in your account.</p>
+        <button id="close-confirmation" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+
+    <!-- SVG Icons -->
+    <svg style="display:none;">
+      <symbol id="cart-icon" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9h14l-2-9M9 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol>
+      <symbol id="close-icon" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></symbol>
+      <symbol id="chevron-left" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></symbol>
+      <symbol id="chevron-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+      <symbol id="google-icon" viewBox="0 0 48 48"><g><path fill="#4285F4" d="M43.6 20.5H42V20H24v8h11.3C34.9 32.1 30.2 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3 12.9 3 4 11.9 4 23s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.5 16.1 18.8 13 24 13c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3c-7.1 0-13.1 3.7-16.7 9.3z"/><path fill="#FBBC05" d="M24 43c5.8 0 10.7-1.9 14.2-5.1l-6.6-5.4C29.7 34.7 27 35.5 24 35.5c-6.2 0-11.4-4.2-13.2-9.8l-6.6 5.1C7.1 39.3 14.9 43 24 43z"/><path fill="#EA4335" d="M43.6 20.5H42V20H24v8h11.3c-1.2 3.2-4.2 5.5-7.3 5.5-2.8 0-5.4-.9-7.5-2.6l-5.6 5.6C14.5 39.9 19.1 43 24 43c7.1 0 13.1-3.7 16.7-9.3z"/></g></symbol>
+      <symbol id="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 0 1 12.21 3a7 7 0 1 0 8.79 9.79z"/></symbol>
+      <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+    </svg>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html> 
