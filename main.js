@@ -416,3 +416,5 @@ orderConfirmation.onclick = e => { if (e.target === orderConfirmation) orderConf
 // --- Init ---
 loadSpecials();
 loadMenu().then(renderCart);
+
+// No changes needed for navbar layout in JS. Navbar is controlled by CSS and HTML only.
