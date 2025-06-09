@@ -105,7 +105,108 @@
         <button id="close-checkout" class="icon-btn close-btn">
           <svg class="icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#close-icon"></use></svg>
         </button>
-        <div id="checkout-steps"></div>
+        <div id="checkout-steps" class="checkout-steps">
+          <!-- Step 1: Delivery Address -->
+          <div id="step-delivery-address" class="checkout-step">
+            <h2 class="modal-title">Delivery address</h2>
+            <div class="input-group location-input-group">
+              <svg class="icon location-icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#location-icon"></use></svg>
+              <input type="text" id="delivery-address-input" class="input location-input" placeholder="Enter delivery address" required/>
+              <div id="address-suggestions" class="address-suggestions"></div>
+            </div>
+            <div class="checkout-navigation">
+              <button id="next-to-payment" class="btn btn-accent">Next</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment Method -->
+          <div id="step-payment-method" class="checkout-step hidden">
+            <h2 class="modal-title">Payment Method</h2>
+            <div class="payment-options">
+              <label class="radio-option">
+                <input type="radio" name="payment-method" value="wallet" checked>
+                Wallet (₦0.00)
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="payment-method" value="pay-online">
+                Pay online
+              </label>
+            </div>
+            <div class="checkout-navigation">
+              <button id="prev-to-address" class="btn btn-secondary">Back</button>
+              <button id="next-to-summary" class="btn btn-accent">Next</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Order Summary -->
+          <div id="step-order-summary" class="checkout-step hidden">
+            <h2 class="modal-title">Checkout</h2>
+            <div class="checkout-details-sections">
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span>Payment Method</span>
+                  <span class="detail-action link" id="checkout-payment-method-display">Choose</span>
+                </div>
+              </div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span>Promo Code</span>
+                  <span class="detail-action link" id="checkout-promo-code">Choose</span>
+                </div>
+              </div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span id="summary-delivery-address">26 Iyalla St</span>
+                  <span class="detail-action link" id="checkout-change-address">Change</span>
+                </div>
+              </div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span>Delivery instructions</span>
+                  <span class="detail-action link" id="checkout-add-delivery-instructions-btn">Add</span>
+                </div>
+                <textarea id="delivery-instructions" class="input hidden" placeholder="Add delivery instructions (e.g., Leave at the door)"></textarea>
+              </div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span>Vendor instructions</span>
+                  <span class="detail-action link" id="checkout-add-vendor-instructions-btn">Add</span>
+                </div>
+                <textarea id="vendor-instructions" class="input hidden" placeholder="Add vendor instructions (e.g., No onions)"></textarea>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <svg class="icon info-icon" fill="none" stroke="currentColor" stroke-width="2"><use href="#info-icon"></use></svg>
+              Delivery includes PIN confirmation<br/>This helps ensure that your order is given to the right person
+            </div>
+
+            <div id="checkout-items" class="checkout-items"></div>
+            <div class="checkout-summary">
+              <div class="checkout-summary-row">
+                <span>Sub total (<span id="summary-item-count">0</span> item)</span>
+                <span id="summary-subtotal">₦0.00</span>
+              </div>
+              <div class="checkout-summary-row">
+                <span>Delivery fee</span>
+                <span id="summary-delivery-fee">₦0.00</span>
+              </div>
+              <div class="checkout-summary-row">
+                <span>Service fee</span>
+                <span id="summary-service-fee">₦0.00</span>
+              </div>
+              <div class="checkout-summary-total">
+                <span>Total</span>
+                <span id="summary-total">₦0.00</span>
+              </div>
+            </div>
+            <div class="checkout-navigation">
+              <button id="place-order-btn" class="btn btn-accent">Place order</button>
+              <button id="clear-orders-btn" class="btn btn-secondary">Clear orders</button>
+              <button id="save-for-later-btn" class="btn btn-secondary">Save for later</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -127,6 +228,8 @@
       <symbol id="google-icon" viewBox="0 0 48 48"><g><path fill="#4285F4" d="M43.6 20.5H42V20H24v8h11.3C34.9 32.1 30.2 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3 12.9 3 4 11.9 4 23s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.5 16.1 18.8 13 24 13c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3c-7.1 0-13.1 3.7-16.7 9.3z"/><path fill="#FBBC05" d="M24 43c5.8 0 10.7-1.9 14.2-5.1l-6.6-5.4C29.7 34.7 27 35.5 24 35.5c-6.2 0-11.4-4.2-13.2-9.8l-6.6 5.1C7.1 39.3 14.9 43 24 43z"/><path fill="#EA4335" d="M43.6 20.5H42V20H24v8h11.3c-1.2 3.2-4.2 5.5-7.3 5.5-2.8 0-5.4-.9-7.5-2.6l-5.6 5.6C14.5 39.9 19.1 43 24 43c7.1 0 13.1-3.7 16.7-9.3z"/></g></symbol>
       <symbol id="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 0 1 12.21 3a7 7 0 1 0 8.79 9.79z"/></symbol>
       <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+      <symbol id="location-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></symbol>
+      <symbol id="info-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></symbol>
     </svg>
 
     <script type="module" src="main.js"></script>

@@ -313,143 +313,286 @@ function flyToCart(btn) {
 // --- Checkout Modal ---
 const checkoutModal = document.getElementById('checkout-modal');
 const closeCheckout = document.getElementById('close-checkout');
-const checkoutSteps = document.getElementById('checkout-steps');
-let checkoutStep = 0;
-let orderData = {};
+const checkoutStepsContainer = document.getElementById('checkout-steps');
+const stepDeliveryAddress = document.getElementById('step-delivery-address');
+const stepPaymentMethod = document.getElementById('step-payment-method');
+const stepOrderSummary = document.getElementById('step-order-summary');
+const nextToPaymentBtn = document.getElementById('next-to-payment');
+const prevToAddressBtn = document.getElementById('prev-to-address');
+const nextToSummaryBtn = document.getElementById('next-to-summary');
+const placeOrderBtn = document.getElementById('place-order-btn');
+const deliveryAddressInput = document.getElementById('delivery-address-input');
+const addressSuggestionsDiv = document.getElementById('address-suggestions');
+const summaryItemCount = document.getElementById('summary-item-count');
+const summarySubtotal = document.getElementById('summary-subtotal');
+const summaryDeliveryFee = document.getElementById('summary-delivery-fee');
+const summaryServiceFee = document.getElementById('summary-service-fee');
+const summaryTotal = document.getElementById('summary-total');
+const checkoutItemsDiv = document.getElementById('checkout-items');
 
-checkoutBtn.onclick = () => {
+const checkoutPaymentMethodDisplay = document.getElementById('checkout-payment-method-display');
+const checkoutPromoCode = document.getElementById('checkout-promo-code');
+const summaryDeliveryAddress = document.getElementById('summary-delivery-address');
+const checkoutChangeAddress = document.getElementById('checkout-change-address');
+const checkoutAddDeliveryInstructionsBtn = document.getElementById('checkout-add-delivery-instructions-btn');
+const deliveryInstructionsTextarea = document.getElementById('delivery-instructions');
+const checkoutAddVendorInstructionsBtn = document.getElementById('checkout-add-vendor-instructions-btn');
+const vendorInstructionsTextarea = document.getElementById('vendor-instructions');
+const clearOrdersBtn = document.getElementById('clear-orders-btn');
+const saveForLaterBtn = document.getElementById('save-for-later-btn');
+
+let currentCheckoutStep = 0;
+const steps = [stepDeliveryAddress, stepPaymentMethod, stepOrderSummary];
+let selectedAddress = null;
+
+function showCheckoutModal() {
+  checkoutModal.classList.remove('hidden');
+  currentCheckoutStep = 0; // Always start at the first step
+  showCheckoutStep(currentCheckoutStep);
+  initAddressAutocomplete();
+  populateOrderSummary();
+}
+
+function hideCheckoutModal() {
+  checkoutModal.classList.add('hidden');
+}
+
+function showCheckoutStep(stepIndex) {
+  steps.forEach((step, index) => {
+    if (index === stepIndex) {
+      step.classList.remove('hidden');
+    } else {
+      step.classList.add('hidden');
+    }
+  });
+  currentCheckoutStep = stepIndex;
+  if (currentCheckoutStep === 2) { // Order Summary step
+    populateOrderSummary();
+    updateSummaryDetails();
+  }
+}
+
+// Event Listeners for Checkout Modal
+checkoutBtn.onclick = showCheckoutModal;
+closeCheckout.onclick = hideCheckoutModal;
+checkoutModal.onclick = e => { if (e.target === checkoutModal) hideCheckoutModal(); };
+
+nextToPaymentBtn.onclick = () => {
+  if (!selectedAddress || deliveryAddressInput.value.trim() === '') {
+    alert('Please enter and select a valid delivery address.');
+    return;
+  }
+  showCheckoutStep(1); // Go to Payment Method
+};
+prevToAddressBtn.onclick = () => { showCheckoutStep(0); }; // Go back to Delivery Address
+nextToSummaryBtn.onclick = () => { showCheckoutStep(2); populateOrderSummary(); }; // Go to Order Summary and update it
+
+placeOrderBtn.onclick = async () => {
   if (!auth.currentUser) {
+    alert('Please sign in to place an order.');
     showAuthModal(true);
     return;
   }
-  if (Object.keys(cart).length === 0) return;
-  checkoutStep = 0;
-  orderData = {};
-  showCheckoutStep();
-  checkoutModal.classList.remove('hidden');
-};
-closeCheckout.onclick = () => checkoutModal.classList.add('hidden');
-checkoutModal.onclick = e => { if (e.target === checkoutModal) checkoutModal.classList.add('hidden'); };
 
-function initAddressAutocomplete() {
-  const input = document.getElementById('delivery-address');
-  if (input && window.google && window.google.maps && window.google.maps.places) {
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['address'],
-      componentRestrictions: { country: 'ng' } // Adjust country code as needed
-    });
-    autocomplete.setFields(['formatted_address']);
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      input.value = place.formatted_address || input.value;
-    });
+  if (Object.keys(cart).length === 0) {
+    alert('Your cart is empty. Please add items before placing an order.');
+    return;
   }
-}
 
-function showCheckoutStep() {
-  checkoutSteps.innerHTML = '';
-  if (checkoutStep === 0) {
-    // Delivery address step
-    let savedAddress = localStorage.getItem('savedAddress') || '';
-    checkoutSteps.innerHTML = `
-      <div class="checkout-progress">
-        <div class="checkout-step completed">
-          <span>1</span>
-          <span class="checkout-step-label">Order Type</span>
-        </div>
-        <div class="checkout-step active">
-          <span>2</span>
-          <span class="checkout-step-label">Delivery</span>
-        </div>
-        <div class="checkout-step">
-          <span>3</span>
-          <span class="checkout-step-label">Payment</span>
-        </div>
-      </div>
-      <h3 class="font-display text-xl font-bold mb-4">Delivery Address</h3>
-      <form id="delivery-form" class="checkout-form">
-        <div class="checkout-form-group">
-          <label for="delivery-address">Delivery Address</label>
-          <input type="text" id="delivery-address" class="checkout-input" placeholder="Enter your delivery address" value="${savedAddress}" required />
-        </div>
-        <div class="checkout-form-group">
-          <label><input type="checkbox" id="save-address" ${savedAddress ? 'checked' : ''}/> Save address for next time</label>
-        </div>
-        <div class="checkout-btn-group">
-          <button type="button" class="checkout-btn checkout-btn-secondary" onclick="checkoutStep = 0; showCheckoutStep();">Back</button>
-          <button type="submit" class="checkout-btn checkout-btn-primary">Continue to Payment</button>
-        </div>
-      </form>
-    `;
-    initAddressAutocomplete(); // Initialize autocomplete after rendering the input
+  const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+  const deliveryInstructions = deliveryInstructionsTextarea.value.trim();
+  const vendorInstructions = vendorInstructionsTextarea.value.trim();
 
-    document.getElementById('delivery-form').onsubmit = e => {
-      e.preventDefault();
-      const address = document.getElementById('delivery-address').value;
-      const save = document.getElementById('save-address').checked;
-      if (save) localStorage.setItem('savedAddress', address);
-      else localStorage.removeItem('savedAddress');
-      orderData.address = address;
-      checkoutStep = 2;
-      showCheckoutStep();
-    };
-  } else if (checkoutStep === 1) {
-    // Confirm order step
-    checkoutSteps.innerHTML = `
-      <div class="checkout-form-group">
-        <label>Delivery Address</label>
-        <div class="checkout-input" style="background:#f5f6fa;">${orderData.address}</div>
-      </div>
-      <div class="checkout-btn-group">
-        <button class="checkout-btn checkout-btn-primary" id="place-order">Place Order</button>
-        <button class="checkout-btn checkout-btn-secondary" id="back">Back</button>
-      </div>
-    `;
-    document.getElementById('place-order').onclick = async () => {
-      // ...existing order placement logic...
-      checkoutModal.classList.add('hidden');
-      document.getElementById('order-confirmation').classList.remove('hidden');
-      cart = {};
-      localStorage.setItem('cart', '{}');
-      renderCart();
-    };
-    document.getElementById('back').onclick = () => {
-      checkoutStep = 0;
-      showCheckoutStep();
-    };
-  }
-}
-async function placeOrder() {
-  const items = Object.entries(cart).map(([id, qty]) => {
+  const itemsForOrder = Object.entries(cart).map(([id, qty]) => {
     const item = menuItems.find(m => m.id === id) || specials.find(s => s.id === id);
     return { id, name: item.name, price: item.price, qty };
   });
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  await addDoc(collection(db, 'orders'), {
-    user: auth.currentUser.uid,
-    items,
-    subtotal,
-    type: orderData.type,
-    address: orderData.address || null,
-    status: 'pending',
-    created: serverTimestamp(),
+
+  const subtotal = itemsForOrder.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const deliveryFee = 800; // Hardcoded for now
+  const serviceFee = 455; // Hardcoded for now
+  const total = subtotal + deliveryFee + serviceFee;
+
+  try {
+    await addDoc(collection(db, 'orders'), {
+      userId: auth.currentUser.uid,
+      userEmail: auth.currentUser.email,
+      items: itemsForOrder,
+      deliveryAddress: selectedAddress,
+      paymentMethod: paymentMethod,
+      deliveryInstructions: deliveryInstructions || null,
+      vendorInstructions: vendorInstructions || null,
+      subtotal: subtotal,
+      deliveryFee: deliveryFee,
+      serviceFee: serviceFee,
+      total: total,
+      status: 'pending', // e.g., 'pending', 'confirmed', 'delivered', 'cancelled'
+      timestamp: serverTimestamp(),
+    });
+
+    alert('Order Placed Successfully!');
+    cart = {}; // Clear cart
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+    hideCheckoutModal();
+    showOrderConfirmation();
+  } catch (error) {
+    console.error('Error placing order:', error);
+    alert('Failed to place order. Please try again.');
+  }
+};
+
+// --- Address Autocomplete (Google Maps Places API) ---
+let autocomplete;
+
+function initAddressAutocomplete() {
+  if (!deliveryAddressInput) return; // Ensure element exists
+
+  autocomplete = new google.maps.places.Autocomplete(deliveryAddressInput, {
+    types: ['address'],
+    componentRestrictions: {'country': ['ng']} // Restrict to Nigeria
   });
-  cart = {};
-  localStorage.setItem('cart', '{}');
-  renderCart();
-  checkoutModal.classList.add('hidden');
-  showOrderConfirmation();
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      alert("No details available for input: '" + place.name + "'");
+      return;
+    }
+    selectedAddress = place.formatted_address;
+    deliveryAddressInput.value = selectedAddress;
+    addressSuggestionsDiv.innerHTML = ''; // Clear suggestions after selection
+  });
+
+  // Handle custom suggestions display for a better location pickout
+  deliveryAddressInput.addEventListener('input', async () => {
+    const query = deliveryAddressInput.value;
+    if (query.length < 3) {
+      addressSuggestionsDiv.innerHTML = '';
+      return;
+    }
+
+    const service = new google.maps.places.AutocompleteService();
+    service.getPlacePredictions({ input: query, componentRestrictions: {'country': ['ng']} }, (predictions, status) => {
+      addressSuggestionsDiv.innerHTML = '';
+      if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+        predictions.forEach(prediction => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.classList.add('address-suggestion-item');
+          suggestionItem.textContent = prediction.description;
+          suggestionItem.onclick = () => {
+            deliveryAddressInput.value = prediction.description;
+            selectedAddress = prediction.description;
+            addressSuggestionsDiv.innerHTML = ''; // Clear suggestions
+            // Optionally, you might want to fetch place details here for more info
+          };
+          addressSuggestionsDiv.appendChild(suggestionItem);
+        });
+      }
+    });
+  });
 }
-const orderConfirmation = document.getElementById('order-confirmation');
-const closeConfirmation = document.getElementById('close-confirmation');
+
+// --- Populate Order Summary ---
+function populateOrderSummary() {
+  let itemCount = 0;
+  let subtotal = 0;
+
+  checkoutItemsDiv.innerHTML = ''; // Clear previous items
+
+  Object.entries(cart).forEach(([id, qty]) => {
+    const item = menuItems.find(m => m.id === id) || specials.find(s => s.id === id);
+    if (item) {
+      itemCount += qty;
+      subtotal += item.price * qty;
+      const itemElement = document.createElement('div');
+      itemElement.classList.add('cart-item-row'); // Reuse cart-item-row for consistent styling
+      itemElement.innerHTML = `
+        <img src="${item.imageURL || 'https://via.placeholder.com/56?text=No+Image'}" class="cart-img"/>
+        <div class="cart-item-details">
+          <h5>${item.name}</h5>
+          <p>Quantity: ${qty}</p>
+        </div>
+        <span class="cart-item-price">₦${(item.price * qty).toLocaleString()}</span>
+      `;
+      checkoutItemsDiv.appendChild(itemElement);
+    }
+  });
+
+  const deliveryFee = 800; // Example delivery fee
+  const serviceFee = 455; // Example service fee
+  const total = subtotal + deliveryFee + serviceFee;
+
+  summaryItemCount.textContent = itemCount;
+  summarySubtotal.textContent = `₦${subtotal.toLocaleString()}`;
+  summaryDeliveryFee.textContent = `₦${deliveryFee.toLocaleString()}`;
+  summaryServiceFee.textContent = `₦${serviceFee.toLocaleString()}`;
+  summaryTotal.textContent = `₦${total.toLocaleString()}`;
+}
+
+// --- Update Summary Details (for Step 3) ---
+function updateSummaryDetails() {
+  // Update payment method display
+  const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+  checkoutPaymentMethodDisplay.textContent = selectedPaymentMethod === 'wallet' ? 'Wallet (₦0.00)' : 'Pay online';
+
+  // Update delivery address display
+  summaryDeliveryAddress.textContent = selectedAddress || 'Select Address';
+
+  // Toggle delivery instructions textarea
+  checkoutAddDeliveryInstructionsBtn.onclick = () => {
+    deliveryInstructionsTextarea.classList.toggle('hidden');
+    checkoutAddDeliveryInstructionsBtn.textContent = deliveryInstructionsTextarea.classList.contains('hidden') ? 'Add' : 'Hide';
+  };
+
+  // Toggle vendor instructions textarea
+  checkoutAddVendorInstructionsBtn.onclick = () => {
+    vendorInstructionsTextarea.classList.toggle('hidden');
+    checkoutAddVendorInstructionsBtn.textContent = vendorInstructionsTextarea.classList.contains('hidden') ? 'Add' : 'Hide';
+  };
+
+  // Handle change address link
+  checkoutChangeAddress.onclick = () => {
+    showCheckoutStep(0); // Go back to delivery address step
+  };
+
+  // Handle promo code click (placeholder)
+  checkoutPromoCode.onclick = () => {
+    alert('Promo code functionality coming soon!');
+  };
+
+  // Handle Clear orders button
+  clearOrdersBtn.onclick = () => {
+    if (confirm('Are you sure you want to clear your cart?')) {
+      cart = {};
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+      hideCheckoutModal();
+      alert('Cart cleared!');
+    }
+  };
+
+  // Handle Save for later button (placeholder)
+  saveForLaterBtn.onclick = () => {
+    alert('Save for later functionality coming soon!');
+  };
+}
+
+// --- Order Confirmation ---
+const orderConfirmationModal = document.getElementById('order-confirmation');
+const closeConfirmationBtn = document.getElementById('close-confirmation');
+
 function showOrderConfirmation() {
-  orderConfirmation.classList.remove('hidden');
+  orderConfirmationModal.classList.remove('hidden');
 }
-closeConfirmation.onclick = () => orderConfirmation.classList.add('hidden');
-orderConfirmation.onclick = e => { if (e.target === orderConfirmation) orderConfirmation.classList.add('hidden'); };
 
-// --- Init ---
+closeConfirmationBtn.onclick = () => {
+  orderConfirmationModal.classList.add('hidden');
+};
+
+// Initial loads
 loadSpecials();
-loadMenu().then(renderCart);
-
-// No changes needed for navbar layout in JS. Navbar is controlled by CSS and HTML only.
+loadMenu();
+renderCart();
