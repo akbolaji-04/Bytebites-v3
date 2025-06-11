@@ -114,6 +114,7 @@ function renderCarousel() {
     <div class="w-full flex flex-col items-center justify-center p-8">
       <div class="flex flex-col items-center bg-white dark:bg-neutral-dark rounded-2xl shadow-soft p-6 max-w-md mx-auto" style="position:relative;">
         <img src="${s.imageURL || 'https://via.placeholder.com/180?text=No+Image'}" alt="${s.name}" class="carousel-img mb-4" onerror="this.onerror=null;this.src='https://via.placeholder.com/180?text=No+Image';"/>
+        <hr class="carousel-divider" />
         <h3 class="font-display text-2xl font-bold mb-2">${s.name}</h3>
         <p class="mb-2 text-center">${s.description}</p>
         <span class="font-semibold text-accent text-lg">₦${Number(s.price).toLocaleString()}</span>
@@ -187,23 +188,61 @@ async function loadMenu() {
   renderMenu();
 }
 function renderMenu() {
-  menuGrid.innerHTML = menuItems.map(item => `
-    <div class="card group transition hover:shadow-lg hover:-translate-y-1">
-      <div class="relative">
-        <img src="${item.imageURL || 'https://via.placeholder.com/220?text=No+Image'}" alt="${item.name}" class="card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/220?text=No+Image';"/>
-        <button data-id="${item.id}" class="add-cart-btn absolute bottom-2 right-2 bg-accent text-white p-2 rounded-full shadow-soft opacity-0 group-hover:opacity-100 transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"><use href="#cart-icon"></use></svg>
-        </button>
+  menuGrid.innerHTML = menuItems.map(item => {
+    // Dietary icons: expects item.dietary to be an array like ['vegetarian', 'spicy']
+    let dietaryIcons = '';
+    if (Array.isArray(item.dietary)) {
+      dietaryIcons = `<div class="dietary-icons">` + item.dietary.map(type => {
+        if (type === 'vegetarian') return '<svg class="dietary-icon" title="Vegetarian"><use href="#veg-icon"></use></svg>';
+        if (type === 'spicy') return '<svg class="dietary-icon" title="Spicy"><use href="#spicy-icon"></use></svg>';
+        if (type === 'vegan') return '<svg class="dietary-icon" title="Vegan"><use href="#vegan-icon"></use></svg>';
+        if (type === 'glutenfree') return '<svg class="dietary-icon" title="Gluten Free"><use href="#glutenfree-icon"></use></svg>';
+        return '';
+      }).join('') + `</div>`;
+    }
+    // Quantity selector
+    let qty = cart[item.id] || 1;
+    return `
+      <div class="card group transition hover:shadow-lg hover:-translate-y-1">
+        <div class="relative">
+          <div class="card-img-wrapper">
+            <img src="${item.imageURL || 'https://via.placeholder.com/220?text=No+Image'}" alt="${item.name}" class="card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/220?text=No+Image';"/>
+          </div>
+          <hr class="carousel-divider" />
+        </div>
+        <h4 class="card-title">${item.name}</h4>
+        ${dietaryIcons}
+        <p class="card-desc">${item.description}</p>
+        <div class="flex items-center justify-between mt-2">
+          <span class="card-price">₦${Number(item.price).toLocaleString()}</span>
+        </div>
+        <div class="card-action-row">
+          <div class="qty-selector">
+            <button class="qty-btn" data-id="${item.id}" data-delta="-1">-</button>
+            <span class="qty-value" id="qty-value-${item.id}">${qty}</span>
+            <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+          </div>
+          <button data-id="${item.id}" class="add-cart-btn btn btn-accent">Add to Cart</button>
+        </div>
       </div>
-      <h4 class="card-title font-display text-xl font-bold">${item.name}</h4>
-      <p class="card-desc flex-1">${item.description}</p>
-      <div class="flex items-center justify-between">
-        <span class="card-price font-semibold text-accent text-lg">₦${Number(item.price).toLocaleString()}</span>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+  // Add event listeners for quantity selectors and add to cart
+  document.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.onclick = e => {
+      const id = btn.dataset.id;
+      let val = Number(document.getElementById(`qty-value-${id}`).textContent);
+      val += parseInt(btn.dataset.delta);
+      if (val < 1) val = 1;
+      document.getElementById(`qty-value-${id}`).textContent = val;
+    };
+  });
   document.querySelectorAll('.add-cart-btn').forEach(btn => {
-    btn.onclick = e => addToCart(btn.dataset.id, e);
+    btn.onclick = e => {
+      const id = btn.dataset.id;
+      const qty = Number(document.getElementById(`qty-value-${id}`).textContent);
+      addToCart(id, e, qty);
+    };
   });
 }
 
@@ -223,8 +262,8 @@ cartBtn.onclick = openCart;
 closeCart.onclick = closeCartDrawer;
 cartDrawer.onclick = e => { if (e.target === cartDrawer) closeCartDrawer(); };
 
-function addToCart(id, e) {
-  cart[id] = (cart[id] || 0) + 1;
+function addToCart(id, e, qty = 1) {
+  cart[id] = (cart[id] || 0) + qty;
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
   flyToCart(e.target.closest('.add-cart-btn'));
@@ -593,6 +632,16 @@ closeConfirmationBtn.onclick = () => {
 };
 
 // Initial loads
-loadSpecials();
-loadMenu();
-renderCart();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSpecials();
+    loadMenu();
+    renderCart();
+    setDarkMode(localStorage.getItem('theme') === 'dark');
+  });
+} else {
+  loadSpecials();
+  loadMenu();
+  renderCart();
+  setDarkMode(localStorage.getItem('theme') === 'dark');
+}

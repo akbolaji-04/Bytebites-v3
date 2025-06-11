@@ -23,7 +23,12 @@ body {
   --shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
 }
 
-body.dark {
+html.dark {
+  background: var(--neutral-dark);
+  color: var(--neutral-light);
+}
+
+html.dark body {
   background: var(--neutral-dark);
   color: var(--neutral-light);
 }
@@ -48,7 +53,7 @@ body.dark {
   min-height: 64px;
   overflow-x: auto;
 }
-body.dark .navbar {
+html.dark .navbar {
   background: var(--neutral-dark);
 }
 .logo {
@@ -198,8 +203,8 @@ body.dark .navbar {
   max-width: 420px;
   text-align: center;
 }
-body.dark .modal-content {
-  background: var(--neutral-dark);
+html.dark .modal-content {
+  background: #23272F;
   color: var(--neutral-light);
 }
 .modal-title {
@@ -229,6 +234,9 @@ body.dark .modal-content {
   height: 1px;
   background: #e0e0e0;
 }
+html.dark .divider:before, html.dark .divider:after {
+  background: #333;
+}
 
 /* Form */
 .form {
@@ -246,10 +254,11 @@ body.dark .modal-content {
   transition: border 0.2s;
 }
 .input:focus {
-  border: 1.5px solid var(--accent);
+  border: 1.5px solid var(--accent-dark);
+  box-shadow: 0 0 0 2px var(--accent-light);
 }
-body.dark .input {
-  background: var(--neutral-dark);
+html.dark .input {
+  background: #23272F;
   color: var(--neutral-light);
   border: 1px solid #333;
 }
@@ -260,6 +269,14 @@ body.dark .input {
   margin: 0 auto;
   padding: 6rem 1rem 2rem 1rem; 
   box-sizing: border-box;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.04);
+  margin-bottom: 2.5rem;
+}
+html.dark .section {
+  background: #181A20;
+  box-shadow: 0 2px 16px 0 rgba(24,26,32,0.12);
 }
 .section-title {
   font-family: 'Poppins', Arial, sans-serif;
@@ -267,6 +284,11 @@ body.dark .input {
   font-weight: bold;
   margin-bottom: 1.2rem;
   text-align: center;
+}
+html.dark .section-title,
+html.dark .card-title,
+html.dark .special-title {
+  color: var(--accent-light);
 }
 
 .section + .section {
@@ -296,7 +318,7 @@ body.dark .input {
   justify-content: center;
   padding: 0.5rem 0;
 }
-body.dark .carousel {
+html.dark .carousel {
   background: var(--neutral-dark);
 }
 .carousel-track {
@@ -330,6 +352,8 @@ body.dark .carousel-btn { background: rgba(24,26,32,0.8); }
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 4rem;
   align-items: stretch;
+  row-gap: 3rem;
+  column-gap: 2rem;
 }
 .card {
   background: #fff;
@@ -339,28 +363,55 @@ body.dark .carousel-btn { background: rgba(24,26,32,0.8); }
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: box-shadow 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  transition: box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.22s cubic-bezier(0.4,0,0.2,1);
   position: relative;
   min-height: 420px;
   height: 100%;
+  overflow: hidden;
 }
 .card:hover {
-  box-shadow: 0 8px 32px 0 rgba(255,107,53,0.16);
-  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 8px 32px 0 rgba(255,107,53,0.18), 0 2px 8px 0 rgba(0,0,0,0.06);
+  transform: translateY(-8px) scale(1.03);
 }
-body.dark .card {
+html.dark .card {
   background: var(--neutral-dark);
 }
-.card-img {
+.card-img-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  margin-bottom: 1.2rem;
+  overflow: hidden;
 }
-.card:hover .card-img {
-  transform: scale(1.04);
+.card-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 1.2rem;
+  box-shadow: var(--shadow);
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .card-img-wrapper {
+    aspect-ratio: 1 / 1;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media (max-width: 900px) {
+  .card-img-wrapper {
+    aspect-ratio: 1 / 1;
+    max-width: 180px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 .card-title {
   font-family: 'Poppins', Arial, sans-serif;
@@ -373,7 +424,8 @@ body.dark .card {
   color: #555;
   margin-bottom: 0.5rem;
 }
-body.dark .card-desc {
+html.dark .card-desc,
+html.dark .special-desc {
   color: #ccc;
 }
 .card-price {
@@ -405,6 +457,73 @@ body.dark .card-desc {
 .card .add-cart-btn:hover {
   background: var(--accent-dark);
 }
+.add-cart-btn.w-full {
+  display: block;
+  width: 100%;
+  margin-top: 1.2rem;
+  position: static;
+  opacity: 1;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.9rem 0;
+  box-shadow: var(--shadow);
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.2s;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.add-cart-btn.w-full:hover {
+  background: var(--accent-dark);
+}
+
+/* Add spacing between qty-selector and add-cart-btn */
+.qty-selector {
+  margin-bottom: 0.5rem;
+}
+
+.card-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.card .qty-selector {
+  margin-bottom: 0;
+}
+.card .add-cart-btn {
+  margin-top: 0;
+  min-width: 120px;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.2s;
+  text-align: center;
+  letter-spacing: 0.01em;
+  position: static;
+  opacity: 1;
+  width: auto;
+}
+.card .add-cart-btn:hover {
+  background: var(--accent-dark);
+}
+@media (max-width: 600px) {
+  .card-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .card .add-cart-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
 
 /* Cart Drawer */
 .cart-drawer {
@@ -425,7 +544,7 @@ body.dark .card-desc {
 .cart-drawer.open {
   transform: translateX(0);
 }
-body.dark .cart-drawer {
+html.dark .cart-drawer {
   background: var(--neutral-dark);
 }
 .cart-header {
@@ -435,7 +554,7 @@ body.dark .cart-drawer {
   padding: 1.5rem 2rem 1rem 2rem;
   border-bottom: 1px solid #eee;
 }
-body.dark .cart-header {
+html.dark .cart-header {
   border-bottom: 1px solid #333;
 }
 .cart-items {
@@ -450,7 +569,7 @@ body.dark .cart-header {
   padding: 1.5rem 2rem;
   border-top: 1px solid #eee;
 }
-body.dark .cart-footer {
+html.dark .cart-footer {
   border-top: 1px solid #333;
 }
 .cart-subtotal-row {
@@ -465,6 +584,10 @@ body.dark .cart-footer {
   color: var(--accent);
   font-size: 1.2rem;
   font-weight: bold;
+}
+html.dark .cart-item-price,
+html.dark .cart-subtotal {
+  color: var(--accent-light);
 }
 
 /* Chef's Special Modal */
@@ -492,6 +615,10 @@ body.dark .cart-footer {
   align-items: center;
   justify-content: center;
 }
+html.dark #special-modal .modal-content {
+  background: #23272F;
+  color: var(--neutral-light);
+}
 #special-modal .close-btn {
   position: absolute;
   top: 1.2rem;
@@ -514,15 +641,24 @@ body.dark .cart-footer {
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
+html.dark #special-modal .special-title {
+  color: var(--accent-light);
+}
 #special-modal .special-desc {
   color: #555;
   margin-bottom: 1rem;
+}
+html.dark #special-modal .special-desc {
+  color: #ccc;
 }
 #special-modal .special-price {
   color: var(--accent);
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
+}
+html.dark #special-modal .special-price {
+  color: var(--accent-light);
 }
 #special-modal .add-cart-btn {
   background: var(--accent);
@@ -536,7 +672,14 @@ body.dark .cart-footer {
   cursor: pointer;
   transition: background 0.2s;
 }
+html.dark #special-modal .add-cart-btn {
+  background: var(--accent-light);
+  color: #fff;
+}
 #special-modal .add-cart-btn:hover {
+  background: var(--accent-dark);
+}
+html.dark #special-modal .add-cart-btn:hover {
   background: var(--accent-dark);
 }
 
@@ -624,14 +767,18 @@ body.dark .cart-footer {
   flex-direction: column !important;
 }
 .carousel-img {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: 280px;
   object-fit: cover;
   border-radius: 1.2rem;
   box-shadow: var(--shadow);
-  background: #f5f6fa;
-  display: block;
-  margin: 0 auto 1.5rem auto;
+  margin-bottom: 1.2rem;
+}
+@media (min-width: 900px) {
+  .carousel-img {
+    width: 320px;
+    height: 380px;
+  }
 }
 .carousel-track h3, .carousel-track p, .carousel-track span {
   text-align: center;
@@ -788,12 +935,12 @@ body.dark .cart-footer {
   background: var(--neutral-light);
 }
 
-body.dark .address-suggestions {
+html.dark .address-suggestions {
   background: var(--neutral-dark);
   border-color: #333;
 }
 
-body.dark .address-suggestion-item:hover {
+html.dark .address-suggestion-item:hover {
   background: #2c2f3a;
 }
 
@@ -852,12 +999,12 @@ body.dark .address-suggestion-item:hover {
   transform: scale(1);
 }
 
-body.dark .radio-option {
-  background: var(--neutral-dark);
+html.dark .radio-option {
+  background: #23272F;
   border-color: #333;
 }
 
-body.dark .radio-option:hover {
+html.dark .radio-option:hover {
   background: #2c2f3a;
   border-color: var(--accent);
 }
@@ -869,8 +1016,7 @@ body.dark .radio-option:hover {
   margin-top: 1.5rem;
   margin-bottom: 2rem;
 }
-
-body.dark .checkout-summary {
+html.dark .checkout-summary {
   background: #2c2f3a;
 }
 
@@ -890,8 +1036,7 @@ body.dark .checkout-summary {
   border-top: 1px dashed #e0e0e0;
   margin-top: 1rem;
 }
-
-body.dark .checkout-summary-total {
+html.dark .checkout-summary-total {
   border-top-color: #555;
 }
 
@@ -1039,3 +1184,176 @@ body.dark .checkout-navigation .btn-secondary:hover {
   color: var(--accent-light);
   border-color: var(--accent);
 }
+
+/* Heading and Title Styles */
+h1, h2, h3, h4, .section-title, .card-title, .modal-title, .special-title {
+  font-family: 'Playfair Display', 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.card-title, .special-title {
+  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* Price and Subtotal Styles */
+.card-price, .special-price, .cart-subtotal, .cart-item-price, .checkout-summary-total span:last-child, #summary-total {
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Dietary icons */
+.dietary-icons {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+.dietary-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+  background: #fff6f2;
+  border-radius: 50%;
+  border: 1px solid #ffe5dd;
+  padding: 0.1rem;
+}
+
+@media (max-width: 600px) {
+  .dietary-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Quantity selector */
+.qty-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.qty-btn {
+  background: var(--accent-light);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 1.8rem;
+  height: 1.8rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.qty-btn:hover {
+  background: var(--accent-dark);
+}
+.qty-value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* --- UI Professional Polish --- */
+/* Card hover: more pronounced shadow and slight scale */
+.card {
+  transition: box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.card:hover {
+  box-shadow: 0 8px 32px 0 rgba(255,107,53,0.18), 0 2px 8px 0 rgba(0,0,0,0.06);
+  transform: translateY(-8px) scale(1.03);
+}
+
+/* Section background for separation */
+.section {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.04);
+  margin-bottom: 2.5rem;
+  padding: 4.5rem 1.5rem 2.5rem 1.5rem;
+}
+html.dark .section {
+  background: #181A20;
+  box-shadow: 0 2px 16px 0 rgba(24,26,32,0.12);
+}
+
+/* Button focus for accessibility */
+.btn:focus, .icon-btn:focus, .add-cart-btn:focus {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+/* Modal focus and shadow */
+.modal-content:focus-within {
+  box-shadow: 0 0 0 3px var(--accent-light), var(--shadow);
+}
+
+/* Input focus improvement */
+.input:focus {
+  border: 1.5px solid var(--accent-dark);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+/* Dietary icon highlight */
+.dietary-icon {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+  background: #fff6f2;
+  border-radius: 50%;
+  border: 1px solid #ffe5dd;
+  padding: 0.1rem;
+}
+html.dark .dietary-icon {
+  background: #23272F;
+  border-color: #333;
+}
+
+/* Subtle divider between menu cards */
+.menu-grid {
+  row-gap: 3rem;
+  column-gap: 2rem;
+}
+
+/* Responsive font and padding tweaks */
+@media (max-width: 900px) {
+  .section {
+    padding: 2.5rem 0.7rem 1.5rem 0.7rem;
+    margin-bottom: 1.2rem;
+  }
+  .card-img, .carousel-img {
+    height: 180px;
+  }
+  .card-title, .special-title {
+    font-size: 1.1rem;
+  }
+}
+@media (max-width: 600px) {
+  .section {
+    padding: 1.5rem 0.2rem 1rem 0.2rem;
+    margin-bottom: 0.7rem;
+  }
+  .card {
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+    min-height: 320px;
+  }
+  .btn, .btn-accent, .btn-secondary {
+    font-size: 1rem;
+    padding: 0.7rem 1.1rem;
+    min-width: 90px;
+  }
+}
+
+/* Tap target improvement for mobile */
+@media (max-width: 600px) {
+  .icon-btn, .qty-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.5rem;
+  }
+}
+/* --- End UI Professional Polish --- */
