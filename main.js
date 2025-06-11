@@ -200,8 +200,9 @@ function renderMenu() {
         return '';
       }).join('') + `</div>`;
     }
-    // Quantity selector
-    let qty = cart[item.id] || 1;
+    // Quantity selector: always show a valid number
+    let qty = Number(cart[item.id]);
+    if (!Number.isFinite(qty) || qty < 1) qty = 1;
     return `
       <div class="card group transition hover:shadow-lg hover:-translate-y-1">
         <div class="relative">
@@ -233,14 +234,15 @@ function renderMenu() {
       const id = btn.dataset.id;
       let val = Number(document.getElementById(`qty-value-${id}`).textContent);
       val += parseInt(btn.dataset.delta);
-      if (val < 1) val = 1;
+      if (!Number.isFinite(val) || val < 1) val = 1;
       document.getElementById(`qty-value-${id}`).textContent = val;
     };
   });
   document.querySelectorAll('.add-cart-btn').forEach(btn => {
     btn.onclick = e => {
       const id = btn.dataset.id;
-      const qty = Number(document.getElementById(`qty-value-${id}`).textContent);
+      let qty = Number(document.getElementById(`qty-value-${id}`).textContent);
+      if (!Number.isFinite(qty) || qty < 1) qty = 1;
       addToCart(id, e, qty);
     };
   });
@@ -256,6 +258,22 @@ const cartCount = document.getElementById('cart-count');
 const checkoutBtn = document.getElementById('checkout-btn');
 let cart = JSON.parse(localStorage.getItem('cart') || '{}');
 
+// --- Sanitize cart values to always be positive integers ---
+function sanitizeCart() {
+  let changed = false;
+  for (const id in cart) {
+    let qty = parseInt(cart[id]);
+    if (!Number.isFinite(qty) || qty < 1) {
+      qty = 1;
+      changed = true;
+    }
+    cart[id] = qty;
+  }
+  if (changed) localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+sanitizeCart();
+
 function openCart() { cartDrawer.style.transform = 'translateX(0)'; }
 function closeCartDrawer() { cartDrawer.style.transform = 'translateX(100%)'; }
 cartBtn.onclick = openCart;
@@ -263,7 +281,10 @@ closeCart.onclick = closeCartDrawer;
 cartDrawer.onclick = e => { if (e.target === cartDrawer) closeCartDrawer(); };
 
 function addToCart(id, e, qty = 1) {
-  cart[id] = (cart[id] || 0) + qty;
+  qty = parseInt(qty);
+  if (!Number.isFinite(qty) || qty < 1) qty = 1;
+  cart[id] = (parseInt(cart[id]) || 0) + qty;
+  sanitizeCart();
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
   flyToCart(e.target.closest('.add-cart-btn'));
@@ -274,14 +295,20 @@ function removeFromCart(id) {
   renderCart();
 }
 function updateCartQty(id, qty) {
-  if (qty < 1) return;
+  qty = parseInt(qty);
+  if (!Number.isFinite(qty) || qty < 1) qty = 1;
   cart[id] = qty;
+  sanitizeCart();
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
 }
 function renderCart() {
+  sanitizeCart();
   let items = Object.entries(cart).map(([id, qty]) => {
-    let item = menuItems.find(m => m.id === id) || specials.find(s => s.id === id);
+    qty = parseInt(qty);
+    if (!Number.isFinite(qty) || qty < 1) qty = 1;
+    // Ensure id is always a string for lookup
+    const item = menuItems.find(m => String(m.id) === String(id)) || specials.find(s => String(s.id) === String(id));
     if (!item) return '';
     return `
       <div class="cart-item-row">
@@ -292,7 +319,7 @@ function renderCart() {
             <button class="qty-btn px-2 py-1 rounded bg-neutral-light dark:bg-neutral-dark" data-id="${id}" data-delta="-1">-</button>
             <span class="font-semibold">${qty}</span>
             <button class="qty-btn px-2 py-1 rounded bg-neutral-light dark:bg-neutral-dark" data-id="${id}" data-delta="1">+</button>
-            <span class="cart-item-price">₦${(item.price * qty).toLocaleString()}</span>
+            <span class="cart-item-price">₦${(Number(item.price) * qty).toLocaleString()}</span>
           </div>
         </div>
         <button class="remove-cart text-neutral-dark dark:text-neutral-light hover:text-accent" data-id="${id}">
@@ -303,11 +330,13 @@ function renderCart() {
   }).join('');
   cartItemsDiv.innerHTML = items || '<p class="text-center text-neutral-dark/60 dark:text-neutral-light/60">Your cart is empty.</p>';
   let subtotal = Object.entries(cart).reduce((sum, [id, qty]) => {
-    let item = menuItems.find(m => m.id === id) || specials.find(s => s.id === id);
-    return item ? sum + item.price * qty : sum;
+    qty = parseInt(qty);
+    if (!Number.isFinite(qty) || qty < 1) qty = 1;
+    let item = menuItems.find(m => String(m.id) === String(id)) || specials.find(s => String(s.id) === String(id));
+    return item ? sum + Number(item.price) * qty : sum;
   }, 0);
   cartSubtotal.textContent = `₦${subtotal.toLocaleString()}`;
-  let count = Object.values(cart).reduce((a, b) => a + b, 0);
+  let count = Object.values(cart).reduce((a, b) => a + (Number.isFinite(parseInt(b)) && parseInt(b) > 0 ? parseInt(b) : 0), 0);
   cartCount.textContent = count;
   cartCount.classList.toggle('hidden', count === 0);
 
@@ -315,38 +344,14 @@ function renderCart() {
     btn.onclick = () => {
       let id = btn.dataset.id;
       let delta = parseInt(btn.dataset.delta);
-      let qty = cart[id] + delta;
-      if (qty < 1) return;
+      let qty = parseInt(cart[id]) + delta;
+      if (!Number.isFinite(qty) || qty < 1) qty = 1;
       updateCartQty(id, qty);
     };
   });
   document.querySelectorAll('.remove-cart').forEach(btn => {
     btn.onclick = () => removeFromCart(btn.dataset.id);
   });
-}
-function flyToCart(btn) {
-  const img = btn.closest('.relative').querySelector('img');
-  const cartIcon = cartBtn;
-  if (!img || !cartIcon) return;
-  const imgRect = img.getBoundingClientRect();
-  const cartRect = cartIcon.getBoundingClientRect();
-  const clone = img.cloneNode();
-  clone.style.position = 'fixed';
-  clone.style.left = imgRect.left + 'px';
-  clone.style.top = imgRect.top + 'px';
-  clone.style.width = imgRect.width + 'px';
-  clone.style.height = imgRect.height + 'px';
-  clone.style.zIndex = 9999;
-  clone.classList.add('fly-to-cart');
-  document.body.appendChild(clone);
-  setTimeout(() => {
-    clone.style.left = cartRect.left + 'px';
-    clone.style.top = cartRect.top + 'px';
-    clone.style.width = '32px';
-    clone.style.height = '32px';
-    clone.style.opacity = 0;
-  }, 10);
-  setTimeout(() => clone.remove(), 700);
 }
 
 // --- Checkout Modal ---
