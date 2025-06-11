@@ -1348,6 +1348,7 @@ html.dark .dietary-icon {
   }
 }
 
+
 /* Tap target improvement for mobile */
 @media (max-width: 600px) {
   .icon-btn, .qty-btn {
