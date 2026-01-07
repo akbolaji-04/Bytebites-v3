@@ -1,0 +1,247 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+  --primary: #23272F;
+  --accent: #FF6B35;       /* Your orange brand color */
+  --bg-body: #fdfbf7;      /* Creamy background like reference */
+  --bg-card: #ffffff;
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --border-color: #e5e5e5;
+  --radius: 12px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+html.dark {
+  --bg-body: #111111;
+  --bg-card: #1a1a1a;
+  --text-main: #ffffff;
+  --text-muted: #a0a0a0;
+  --border-color: #333333;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-body);
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* --- Navbar --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 5%;
+  background: var(--bg-card); /* Solid background */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.text-accent { color: var(--accent); }
+
+.navbar-right { display: flex; gap: 1rem; align-items: center; }
+
+/* Buttons & Icons */
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  transition: all 0.2s;
+  position: relative;
+}
+.icon-btn:hover { background: var(--bg-body); border-color: var(--accent); color: var(--accent); }
+
+.cart-count {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: var(--accent); color: #fff;
+  font-size: 0.7rem; font-weight: bold;
+  padding: 2px 6px; border-radius: 10px;
+}
+
+.btn-primary {
+  background: var(--text-main);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover { background: var(--accent); }
+
+/* --- Section Styling --- */
+.section { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--text-main);
+}
+
+/* --- MENU LIST LAYOUT (Desktop) --- */
+/* This mimics the "dotted line" list from your reference */
+.menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.menu-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+.menu-item-row:last-child { border-bottom: none; }
+
+.menu-thumb {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eee;
+}
+
+.menu-details { flex: 1; display: flex; flex-direction: column; }
+
+.menu-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.menu-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* The magic dotted line */
+.menu-spacer {
+  flex: 1;
+  border-bottom: 2px dotted var(--border-color);
+  margin: 0 1rem;
+  position: relative;
+  top: -6px;
+}
+
+.menu-price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.menu-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 1rem 0;
+  line-height: 1.5;
+  max-width: 85%;
+}
+
+.menu-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Quantity & Add Buttons */
+.qty-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2px;
+}
+.qty-btn {
+  width: 28px; height: 28px;
+  background: transparent; border: none;
+  cursor: pointer; font-weight: bold; color: var(--text-main);
+}
+.qty-btn:hover { color: var(--accent); }
+.qty-val { width: 20px; text-align: center; font-size: 0.9rem; }
+
+.btn-add {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-add:hover { background: var(--accent); color: #fff; }
+
+/* --- MOBILE LAYOUT --- */
+@media (max-width: 640px) {
+  /* Switch from List to Card Stack on Mobile */
+  .menu-item-row {
+    flex-direction: column;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .menu-thumb {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--radius);
+  }
+
+  .menu-header {
+    flex-wrap: wrap; /* Allow price to wrap if needed */
+  }
+
+  .menu-spacer { display: none; } /* Hide dotted line on mobile */
+
+  .menu-title { font-size: 1.3rem; margin-bottom: 0.2rem; }
+  
+  .menu-desc { max-width: 100%; margin-bottom: 1rem; }
+
+  .menu-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .btn-add { flex: 1; margin-left: 1rem; text-align: center; }
+}
+
+/* Utilities */
+.hidden { display: none; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; }
+
+/* --- Carousel --- */
+/* Simple fix for carousel to match theme */
+.carousel { background: var(--bg-card); border-radius: var(--radius); overflow: hidden; position: relative; min-height: 300px; }
+.carousel-img { width: 100%; height: 350px; object-fit: cover; }
+.carousel-track { display: flex; transition: transform 0.5s ease; }
+.carousel-content { padding: 2rem; text-align: center; }
+.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.carousel-btn.left { left: 1rem; }
+.carousel-btn.right { right: 1rem; }
