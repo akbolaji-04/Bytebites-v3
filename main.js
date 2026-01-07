@@ -170,28 +170,30 @@ carouselNext.onclick = () => {
 let specialModal = null;
 function showSpecialModal(special) {
   if (specialModal) specialModal.remove();
-  specialModal = document.createElement("div");
-  specialModal.id = "special-modal";
-  specialModal.className = "modal";
-  
-  // This structure now matches the CSS provided above
+  specialModal = document.createElement('div');
+  specialModal.id = 'special-modal';
+  specialModal.className = 'modal'; // Important for CSS
   specialModal.innerHTML = `
     <div class="modal-content">
-      <button class="close-btn" aria-label="Close">
-        <i class="ri-close-line"></i>
+      <button class="close-btn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
-      <img src="${special.imageURL || "https://via.placeholder.com/400?text=Delicious"}" alt="${special.name}" class="special-img"/>
+      <img src="${special.imageURL}" alt="${special.name}" class="special-img"/>
       <div class="special-title">${special.name}</div>
       <div class="special-desc">${special.description}</div>
       <div class="special-price">₦${Number(special.price).toLocaleString()}</div>
-      <button class="add-cart-btn btn btn-accent">Add to Cart</button>
+      <button class="add-cart-btn w-full" style="width:100%; background:var(--accent); color:#fff; border:none; padding:1rem; border-radius:50px;">Add to Cart</button>
     </div>
   `;
   document.body.appendChild(specialModal);
   
-  specialModal.querySelector(".close-btn").onclick = () => specialModal.remove();
+  // Close logic
+  const closeBtn = specialModal.querySelector('.close-btn');
+  closeBtn.onclick = () => specialModal.remove();
   specialModal.onclick = (e) => { if (e.target === specialModal) specialModal.remove(); };
-  specialModal.querySelector(".add-cart-btn").onclick = (e) => {
+  
+  // Add to cart logic
+  specialModal.querySelector('.add-cart-btn').onclick = (e) => {
     addToCart(special.id, e);
     specialModal.remove();
   };
@@ -210,51 +212,42 @@ async function loadMenu() {
   renderMenu();
 }
 function renderMenu() {
-  menuGrid.innerHTML = menuItems
-    .map((item) => {
-      let qty = Number(cart[item.id]);
-      if (!Number.isFinite(qty) || qty < 1) qty = 1;
+  menuGrid.innerHTML = menuItems.map(item => {
+    let qty = Number(cart[item.id]);
+    if (!Number.isFinite(qty) || qty < 1) qty = 1;
 
-      return `
+    // This HTML matches the "List Layout" CSS
+    return `
       <div class="menu-item-row">
-        <img src="${item.imageURL || "https://via.placeholder.com/150"}"
-             alt="${item.name}"
-             class="menu-thumb"
-             onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';"/>
-
+        <img src="${item.imageURL || 'https://via.placeholder.com/150'}" 
+             alt="${item.name}" class="menu-thumb"
+             onerror="this.src='https://via.placeholder.com/150?text=No+Image';"/>
+        
         <div class="menu-details">
           <div class="menu-header">
             <h4 class="menu-title">${item.name}</h4>
             <div class="menu-spacer"></div>
-            <span class="menu-price">₦${Number(
-              item.price
-            ).toLocaleString()}</span>
+            <span class="menu-price">₦${Number(item.price).toLocaleString()}</span>
           </div>
-
+          
           <p class="menu-desc">${item.description}</p>
-
+          
           <div class="menu-actions">
             <div class="qty-selector">
-              <button class="qty-btn" data-id="${
-                item.id
-              }" data-delta="-1">-</button>
+              <button class="qty-btn" data-id="${item.id}" data-delta="-1">-</button>
               <span class="qty-val" id="qty-value-${item.id}">${qty}</span>
-              <button class="qty-btn" data-id="${
-                item.id
-              }" data-delta="1">+</button>
+              <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
             </div>
-            <button data-id="${item.id}" class="add-cart-btn btn-add">
-              Add to Cart
-            </button>
+            <button data-id="${item.id}" class="add-cart-btn">Add to Cart</button>
           </div>
         </div>
       </div>
     `;
-    })
-    .join("");
+  }).join('');
 
-  document.querySelectorAll(".qty-btn").forEach((btn) => {
-    btn.onclick = (e) => {
+  // Re-attach listeners
+  document.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.onclick = () => {
       const id = btn.dataset.id;
       let val = Number(document.getElementById(`qty-value-${id}`).textContent);
       val += parseInt(btn.dataset.delta);
@@ -263,8 +256,8 @@ function renderMenu() {
     };
   });
 
-  document.querySelectorAll(".add-cart-btn").forEach((btn) => {
-    btn.onclick = (e) => {
+  document.querySelectorAll('.add-cart-btn').forEach(btn => {
+    btn.onclick = e => {
       const id = btn.dataset.id;
       let qty = Number(document.getElementById(`qty-value-${id}`).textContent);
       addToCart(id, e, qty);
