@@ -173,31 +173,26 @@ function showSpecialModal(special) {
   specialModal = document.createElement("div");
   specialModal.id = "special-modal";
   specialModal.className = "modal";
-  specialModal.setAttribute("role", "dialog");
-  specialModal.setAttribute("aria-modal", "true");
+  
+  // This structure now matches the CSS provided above
   specialModal.innerHTML = `
     <div class="modal-content">
-      <button class="close-btn" aria-label="Close">&times;</button>
-      <img src="${
-        special.imageURL || "https://via.placeholder.com/180?text=No+Image"
-      }" alt="${special.name}" class="special-img"/>
+      <button class="close-btn" aria-label="Close">
+        <i class="ri-close-line"></i>
+      </button>
+      <img src="${special.imageURL || "https://via.placeholder.com/400?text=Delicious"}" alt="${special.name}" class="special-img"/>
       <div class="special-title">${special.name}</div>
       <div class="special-desc">${special.description}</div>
-      <div class="special-price">₦${Number(
-        special.price
-      ).toLocaleString()}</div>
+      <div class="special-price">₦${Number(special.price).toLocaleString()}</div>
       <button class="add-cart-btn btn btn-accent">Add to Cart</button>
     </div>
   `;
   document.body.appendChild(specialModal);
+  
   specialModal.querySelector(".close-btn").onclick = () => specialModal.remove();
-  specialModal.onclick = (e) => {
-    if (e.target === specialModal) specialModal.remove();
-  };
-  specialModal.querySelector(".add-cart-btn").onclick = () => {
-    addToCart(special.id, {
-      target: specialModal.querySelector(".add-cart-btn"),
-    });
+  specialModal.onclick = (e) => { if (e.target === specialModal) specialModal.remove(); };
+  specialModal.querySelector(".add-cart-btn").onclick = (e) => {
+    addToCart(special.id, e);
     specialModal.remove();
   };
 }
