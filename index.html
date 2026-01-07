@@ -2,442 +2,108 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ByteBites - Epicurean Eats</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="manifest" href="site.webmanifest" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff6b35" />
-    <meta name="msapplication-TileColor" content="#da532c" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ByteBites - Premium Delivery</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    
     <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   </head>
   <body>
+    
     <nav class="navbar">
-      <div class="logo-container">
-        <a href="#" class="logo-text"
-          >ByteBites<span class="text-accent">.</span></a
-        >
+      <div class="navbar-left">
+        <a href="#" class="logo-text">ByteBites<span style="color:var(--accent)">.</span></a>
       </div>
-
+      
       <div class="navbar-right">
         <button id="dark-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
-          <i class="ri-moon-line" id="dark-icon-class"></i>
+          <i class="ri-moon-line" id="dark-icon"></i>
         </button>
-
-        <button id="cart-btn" class="icon-btn cart-btn" aria-label="Open Cart">
+        
+        <button id="cart-btn" class="icon-btn" aria-label="Open Cart">
           <i class="ri-shopping-bag-3-line"></i>
           <span id="cart-count" class="cart-count hidden">0</span>
         </button>
-
-        <button id="auth-btn" class="btn btn-primary">
-          <span>Sign In</span>
-        </button>
-        <img id="user-avatar" class="avatar hidden" alt="User" />
+        
+        <button id="auth-btn" class="btn-primary">Sign In</button>
+        <img id="user-avatar" class="icon-btn" style="border-radius:50%; object-fit:cover; display:none;" alt="User" />
       </div>
     </nav>
 
-    <div id="auth-modal" class="modal hidden">
-      <div class="modal-content">
-        <button id="close-auth" class="icon-btn close-btn">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#close-icon"></use>
-          </svg>
-        </button>
-        <h2 class="modal-title" id="auth-title">Sign In</h2>
-        <form id="auth-form" class="form">
-          <div class="input-group">
-            <svg
-              class="icon"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <use href="#email-icon"></use>
-            </svg>
-            <input
-              type="email"
-              id="auth-email"
-              class="input"
-              placeholder="Email"
-              required
-            />
-          </div>
-          <div class="input-group">
-            <svg
-              class="icon"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <use href="#lock-icon"></use>
-            </svg>
-            <input
-              type="password"
-              id="auth-password"
-              class="input"
-              placeholder="Password"
-              required
-            />
-          </div>
-          <button type="submit" class="btn btn-accent">Continue</button>
-        </form>
-        <div class="divider">or</div>
-        <button id="google-signin" class="btn btn-google">
-          <svg class="icon-google" viewBox="0 0 48 48">
-            <use href="#google-icon"></use>
-          </svg>
-          Continue with Google
-        </button>
-        <p class="modal-footer">
-          <span id="toggle-auth-mode" class="link"
-            >Don't have an account? Sign Up</span
-          >
-        </p>
-      </div>
-    </div>
-
     <section class="section">
-      <h2 class="section-title">Chef's Specials</h2>
       <div id="specials-carousel" class="carousel">
         <div id="carousel-track" class="carousel-track"></div>
-        <button id="carousel-prev" class="carousel-btn left">‹</button>
-        <button id="carousel-next" class="carousel-btn right">›</button>
+        
+        <button id="carousel-prev" class="carousel-btn left">
+          <i class="ri-arrow-left-s-line"></i>
+        </button>
+        <button id="carousel-next" class="carousel-btn right">
+          <i class="ri-arrow-right-s-line"></i>
+        </button>
       </div>
     </section>
 
     <section class="section">
-      <h2 class="section-title">Menu</h2>
-      <div id="menu-grid" class="menu-grid"></div>
+      <h2 class="section-title">Our Menu</h2>
+      <div id="menu-grid" class="menu-grid">
+        </div>
     </section>
 
     <div id="cart-drawer" class="cart-drawer">
       <div class="cart-header">
-        <h3>Your Cart</h3>
-        <button id="close-cart" class="icon-btn">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#close-icon"></use>
-          </svg>
+        <h2>Your Order</h2>
+        <button id="close-cart" class="close-cart-btn">
+          <i class="ri-close-line" style="font-size:1.5rem;"></i>
         </button>
       </div>
-      <div id="cart-items" class="cart-items"></div>
+      
+      <div id="cart-items" class="cart-items">
+        <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
+      </div>
+
       <div class="cart-footer">
-        <div class="cart-subtotal-row">
-          <span>Subtotal</span>
-          <span id="cart-subtotal" class="cart-subtotal"></span>
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span id="cart-subtotal">₦0.00</span>
         </div>
-        <button id="checkout-btn" class="btn btn-accent">Checkout</button>
+        <button id="checkout-btn" class="checkout-btn">Go to Checkout</button>
       </div>
     </div>
 
-    <div id="checkout-modal" class="modal hidden">
-      <div class="modal-content checkout-modal-content">
-        <button id="close-checkout" class="icon-btn close-btn">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#close-icon"></use>
-          </svg>
+    <div id="auth-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="close-auth" class="modal-close"><i class="ri-close-line"></i></button>
+        <h2 id="auth-title" style="margin-bottom:1.5rem; font-family:'Playfair Display',serif;">Sign In</h2>
+        <form id="auth-form" style="display:flex; flex-direction:column; gap:1rem;">
+          <input type="email" id="auth-email" placeholder="Email" style="padding:1rem; border-radius:12px; border:1px solid #ddd; width:100%; box-sizing:border-box;" required />
+          <input type="password" id="auth-password" placeholder="Password" style="padding:1rem; border-radius:12px; border:1px solid #ddd; width:100%; box-sizing:border-box;" required />
+          <button type="submit" class="btn-primary" style="width:100%;">Continue</button>
+        </form>
+        <div style="margin:1.5rem 0; text-align:center; color:#888;">or</div>
+        <button id="google-signin" class="btn-primary" style="width:100%; background:white; color:#333; border:1px solid #ddd; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <i class="ri-google-fill"></i> Continue with Google
         </button>
-        <div id="checkout-steps" class="checkout-steps">
-          <div id="step-delivery-address" class="checkout-step">
-            <h2 class="modal-title">Delivery address</h2>
-            <div class="input-group location-input-group">
-              <svg
-                class="icon location-icon"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <use href="#location-icon"></use>
-              </svg>
-              <input
-                type="text"
-                id="delivery-address-input"
-                class="input location-input"
-                placeholder="Enter delivery address"
-                required
-              />
-              <div id="address-suggestions" class="address-suggestions"></div>
-            </div>
-            <div class="checkout-navigation">
-              <button id="next-to-payment" class="btn btn-accent">Next</button>
-            </div>
-          </div>
-
-          <div id="step-payment-method" class="checkout-step hidden">
-            <h2 class="modal-title">Payment Method</h2>
-            <div class="payment-options">
-              <label class="radio-option">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value="wallet"
-                  checked
-                />
-                Wallet (₦0.00)
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="payment-method" value="pay-online" />
-                Pay online
-              </label>
-            </div>
-            <div class="checkout-navigation">
-              <button id="prev-to-address" class="btn btn-secondary">
-                Back
-              </button>
-              <button id="next-to-summary" class="btn btn-accent">Next</button>
-            </div>
-          </div>
-
-          <div id="step-order-summary" class="checkout-step hidden">
-            <h2 class="modal-title">Checkout</h2>
-            <div class="checkout-details-sections">
-              <div class="detail-section">
-                <div class="detail-row">
-                  <span>Payment Method</span>
-                  <span
-                    class="detail-action link"
-                    id="checkout-payment-method-display"
-                    >Choose</span
-                  >
-                </div>
-              </div>
-              <div class="detail-section">
-                <div class="detail-row">
-                  <span>Promo Code</span>
-                  <span class="detail-action link" id="checkout-promo-code"
-                    >Choose</span
-                  >
-                </div>
-              </div>
-              <div class="detail-section">
-                <div class="detail-row">
-                  <span id="summary-delivery-address">26 Iyalla St</span>
-                  <span class="detail-action link" id="checkout-change-address"
-                    >Change</span
-                  >
-                </div>
-              </div>
-              <div class="detail-section">
-                <div class="detail-row">
-                  <span>Delivery instructions</span>
-                  <span
-                    class="detail-action link"
-                    id="checkout-add-delivery-instructions-btn"
-                    >Add</span
-                  >
-                </div>
-                <textarea
-                  id="delivery-instructions"
-                  class="input hidden"
-                  placeholder="Add delivery instructions (e.g., Leave at the door)"
-                ></textarea>
-              </div>
-              <div class="detail-section">
-                <div class="detail-row">
-                  <span>Vendor instructions</span>
-                  <span
-                    class="detail-action link"
-                    id="checkout-add-vendor-instructions-btn"
-                    >Add</span
-                  >
-                </div>
-                <textarea
-                  id="vendor-instructions"
-                  class="input hidden"
-                  placeholder="Add vendor instructions (e.g., No onions)"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="info-box">
-              <svg
-                class="icon info-icon"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <use href="#info-icon"></use>
-              </svg>
-              Delivery includes PIN confirmation<br />This helps ensure that
-              your order is given to the right person
-            </div>
-
-            <div id="checkout-items" class="checkout-items"></div>
-            <div class="checkout-summary">
-              <div class="checkout-summary-row">
-                <span
-                  >Sub total (<span id="summary-item-count">0</span> item)</span
-                >
-                <span id="summary-subtotal">₦0.00</span>
-              </div>
-              <div class="checkout-summary-row">
-                <span>Delivery fee</span>
-                <span id="summary-delivery-fee">₦0.00</span>
-              </div>
-              <div class="checkout-summary-row">
-                <span>Service fee</span>
-                <span id="summary-service-fee">₦0.00</span>
-              </div>
-              <div class="checkout-summary-total">
-                <span>Total</span>
-                <span id="summary-total">₦0.00</span>
-              </div>
-            </div>
-            <div class="checkout-navigation">
-              <button id="place-order-btn" class="btn btn-accent">
-                Place order
-              </button>
-              <button id="clear-orders-btn" class="btn btn-secondary">
-                Clear orders
-              </button>
-              <button id="save-for-later-btn" class="btn btn-secondary">
-                Save for later
-              </button>
-            </div>
-          </div>
-        </div>
+        <p style="text-align:center; margin-top:1rem; cursor:pointer; color:var(--accent);" id="toggle-auth-mode">Don't have an account? Sign Up</p>
       </div>
     </div>
 
     <div id="order-confirmation" class="modal hidden">
-      <div class="modal-content order-confirmation-content">
-        <h2 class="modal-title accent">Order Placed!</h2>
-        <p>
-          Thank you for your order. You can check your order status in your
-          account.
-        </p>
-        <button id="close-confirmation" class="btn btn-secondary">Close</button>
+      <div class="modal-content" style="text-align:center;">
+        <i class="ri-checkbox-circle-fill" style="font-size:4rem; color:#4CAF50;"></i>
+        <h2 style="font-family:'Playfair Display',serif; margin:1rem 0;">Order Placed!</h2>
+        <p style="color:#666; margin-bottom:2rem;">Your delicious food is on its way.</p>
+        <button id="close-confirmation" class="btn-primary">Close</button>
       </div>
     </div>
 
-    <svg style="display: none">
-      <symbol id="cart-icon" viewBox="0 0 24 24">
-        <path
-          d="M6 6h15l-1.5 9h-13z"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <circle cx="9" cy="21" r="1.5" fill="currentColor" />
-        <circle cx="18" cy="21" r="1.5" fill="currentColor" />
-      </symbol>
-      <symbol id="close-icon" viewBox="0 0 24 24">
-        <path d="M6 18L18 6M6 6l12 12" />
-      </symbol>
-      <symbol id="chevron-left" viewBox="0 0 24 24">
-        <path d="M15 19l-7-7 7-7" />
-      </symbol>
-      <symbol id="chevron-right" viewBox="0 0 24 24">
-        <path d="M9 5l7 7-7 7" />
-      </symbol>
-      <symbol id="google-icon" viewBox="0 0 48 48">
-        <g>
-          <path
-            fill="#4285F4"
-            d="M43.6 20.5H42V20H24v8h11.3C34.9 32.1 30.2 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3 12.9 3 4 11.9 4 23s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"
-          />
-          <path
-            fill="#34A853"
-            d="M6.3 14.7l6.6 4.8C14.5 16.1 18.8 13 24 13c2.8 0 5.4.9 7.5 2.6l5.6-5.6C33.5 5.1 28.9 3 24 3c-7.1 0-13.1 3.7-16.7 9.3z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M24 43c5.8 0 10.7-1.9 14.2-5.1l-6.6-5.4C29.7 34.7 27 35.5 24 35.5c-6.2 0-11.4-4.2-13.2-9.8l-6.6 5.1C7.1 39.3 14.9 43 24 43z"
-          />
-          <path
-            fill="#EA4335"
-            d="M43.6 20.5H42V20H24v8h11.3c-1.2 3.2-4.2 5.5-7.3 5.5-2.8 0-5.4-.9-7.5-2.6l-5.6 5.6C14.5 39.9 19.1 43 24 43c7.1 0 13.1-3.7 16.7-9.3z"
-          />
-        </g>
-      </symbol>
-      <symbol id="moon" viewBox="0 0 24 24">
-        <path d="M21 12.79A9 9 0 0 1 12.21 3a7 7 0 1 0 8.79 9.79z" />
-      </symbol>
-      <symbol id="sun" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="5" />
-        <path
-          d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-        />
-      </symbol>
-      <symbol id="location-icon" viewBox="0 0 24 24">
-        <path
-          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-        />
-      </symbol>
-      <symbol id="info-icon" viewBox="0 0 24 24">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-        />
-      </symbol>
-
-      <symbol id="veg-icon" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" fill="#43a047" />
-        <path
-          d="M12 7v5l3 3"
-          stroke="#fff"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </symbol>
-      <symbol id="spicy-icon" viewBox="0 0 24 24">
-        <path
-          d="M12 2C12 2 7 7 7 12a5 5 0 0 0 10 0c0-5-5-10-5-10z"
-          fill="#e53935"
-        />
-        <path
-          d="M12 12v4"
-          stroke="#fff"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-      </symbol>
-      <symbol id="vegan-icon" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" fill="#8bc34a" />
-        <path
-          d="M8 12l2 2 4-4"
-          stroke="#fff"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </symbol>
-      <symbol id="glutenfree-icon" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" fill="#fbc02d" />
-        <path
-          d="M8 16l8-8"
-          stroke="#fff"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-      </symbol>
-      <symbol id="email-icon" viewBox="0 0 24 24">
-        <path
-          d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-        />
-        <polyline points="22,6 12,13 2,6" />
-      </symbol>
-      <symbol id="lock-icon" viewBox="0 0 24 24">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-        <circle cx="12" cy="16" r="1" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </symbol>
-    </svg>
-
     <script type="module" src="main.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8zKTVZpoPmtxX9PS_et_JWVrbUpste9k"></script>
   </body>
 </html>
