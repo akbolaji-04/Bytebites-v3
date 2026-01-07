@@ -172,9 +172,12 @@ function showSpecialModal(special) {
   if (specialModal) specialModal.remove();
   specialModal = document.createElement("div");
   specialModal.id = "special-modal";
+  specialModal.className = "modal";
+  specialModal.setAttribute("role", "dialog");
+  specialModal.setAttribute("aria-modal", "true");
   specialModal.innerHTML = `
     <div class="modal-content">
-      <button class="close-btn">&times;</button>
+      <button class="close-btn" aria-label="Close">&times;</button>
       <img src="${
         special.imageURL || "https://via.placeholder.com/180?text=No+Image"
       }" alt="${special.name}" class="special-img"/>
@@ -183,12 +186,11 @@ function showSpecialModal(special) {
       <div class="special-price">₦${Number(
         special.price
       ).toLocaleString()}</div>
-      <button class="add-cart-btn">Add to Cart</button>
+      <button class="add-cart-btn btn btn-accent">Add to Cart</button>
     </div>
   `;
   document.body.appendChild(specialModal);
-  specialModal.querySelector(".close-btn").onclick = () =>
-    specialModal.remove();
+  specialModal.querySelector(".close-btn").onclick = () => specialModal.remove();
   specialModal.onclick = (e) => {
     if (e.target === specialModal) specialModal.remove();
   };
@@ -300,10 +302,12 @@ function sanitizeCart() {
 sanitizeCart();
 
 function openCart() {
-  cartDrawer.style.transform = "translateX(0)";
+  cartDrawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 function closeCartDrawer() {
-  cartDrawer.style.transform = "translateX(100%)";
+  cartDrawer.classList.remove('open');
+  document.body.style.overflow = '';
 }
 cartBtn.onclick = openCart;
 closeCart.onclick = closeCartDrawer;
@@ -386,6 +390,25 @@ function renderCart() {
   );
   cartCount.textContent = count;
   cartCount.classList.toggle("hidden", count === 0);
+
+  // Global keyboard handler: close modals/drawers on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      try {
+        hideAuthModal();
+      } catch (err) {}
+      try {
+        hideCheckoutModal();
+      } catch (err) {}
+      try {
+        closeCartDrawer();
+      } catch (err) {}
+      if (specialModal) specialModal.remove();
+      try {
+        orderConfirmationModal.classList.add('hidden');
+      } catch (err) {}
+    }
+  });
 
   document.querySelectorAll(".qty-btn").forEach((btn) => {
     btn.onclick = () => {
