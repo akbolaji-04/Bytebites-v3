@@ -14,28 +14,32 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   </head>
   <body>
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="navbar-left">
-        <img src="bytebites logo.png" alt="ByteBites Logo" class="h-8" />
-        <button id="dark-toggle" class="icon-btn">
-          <svg id="dark-icon" class="icon" fill="none" stroke="currentColor" stroke-width="2"></svg>
-        </button>
-      </div>
-      <div class="navbar-right">
-        <button id="cart-btn" class="icon-btn cart-btn">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#cart-icon"></use>
-          </svg>
-          <span id="cart-count" class="cart-count hidden"></span>
-        </button>
-        <button id="auth-btn" class="btn btn-secondary">Sign In</button>
-        <img id="user-avatar" class="avatar hidden" />
-      </div>
-    </nav>
+  <div class="logo-container">
+    <a href="#" class="logo-text">ByteBites<span class="text-accent">.</span></a>
+  </div>
+
+  <div class="navbar-right">
+    <button id="dark-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+      <i class="ri-moon-line" id="dark-icon-class"></i>
+    </button>
+    
+    <button id="cart-btn" class="icon-btn cart-btn" aria-label="Open Cart">
+      <i class="ri-shopping-bag-3-line"></i>
+      <span id="cart-count" class="cart-count hidden">0</span>
+    </button>
+    
+    <button id="auth-btn" class="btn btn-primary">
+      <span>Sign In</span>
+    </button>
+    <img id="user-avatar" class="avatar hidden" alt="User" />
+  </div>
+</nav>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal hidden">
