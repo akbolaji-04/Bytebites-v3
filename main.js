@@ -365,7 +365,7 @@ function renderCart() {
           </div>
         </div>
         <button class="remove-cart text-neutral-dark dark:text-neutral-light hover:text-accent" data-id="${id}">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><use href="#close-icon"></use></svg>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><use href="#close-icon"></use></svg>
         </button>
       </div>
     `;

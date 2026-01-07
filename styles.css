@@ -320,17 +320,22 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: white;
+  background: rgba(255,255,255,0.9);
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   cursor: pointer;
   z-index: 10;
   display: grid;
   place-items: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 1.5rem;
+  color: var(--text-main);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
+.carousel-btn:hover { background: rgba(255,255,255,1); transform: translateY(-50%) scale(1.05); }
 .carousel-btn.left {
   left: 1rem;
 }
@@ -365,7 +370,7 @@ body {
   border-radius: 14px;
   max-width: 720px;
   width: 100%;
-  padding: 1.25rem 1.5rem;
+  padding: 2rem 2.5rem;
   box-shadow: 0 10px 30px rgba(20, 20, 20, 0.08);
   position: relative;
   transform: translateY(6px);
@@ -404,14 +409,17 @@ body {
 .modal-title {
   font-family: "Playfair Display", serif;
   font-size: 1.4rem;
-  margin: 0 0 0.6rem 0;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
 }
 .divider {
   text-align: center;
   color: var(--text-muted);
-  margin: 0.6rem 0;
+  margin: 1rem 0;
   font-size: 0.92rem;
 }
+
+.form { display: flex; flex-direction: column; }
 
 .input {
   width: 100%;
@@ -429,6 +437,10 @@ body {
   box-shadow: 0 8px 30px rgba(255, 107, 53, 0.06);
 }
 .input::placeholder { color: #9a938a; }
+
+.input-group { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.input-group .input { margin-bottom: 0; flex: 1; }
+.input-group .icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--text-muted); }
 
 .btn {
   display: inline-flex;

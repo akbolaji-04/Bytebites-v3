@@ -57,20 +57,30 @@
         </button>
         <h2 class="modal-title" id="auth-title">Sign In</h2>
         <form id="auth-form" class="form">
-          <input
-            type="email"
-            id="auth-email"
-            class="input"
-            placeholder="Email"
-            required
-          />
-          <input
-            type="password"
-            id="auth-password"
-            class="input"
-            placeholder="Password"
-            required
-          />
+          <div class="input-group">
+            <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
+              <use href="#email-icon"></use>
+            </svg>
+            <input
+              type="email"
+              id="auth-email"
+              class="input"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
+              <use href="#lock-icon"></use>
+            </svg>
+            <input
+              type="password"
+              id="auth-password"
+              class="input"
+              placeholder="Password"
+              required
+            />
+          </div>
           <button type="submit" class="btn btn-accent">Continue</button>
         </form>
         <div class="divider">or</div>
@@ -92,16 +102,8 @@
       <h2 class="section-title">Chef's Specials</h2>
       <div id="specials-carousel" class="carousel">
         <div id="carousel-track" class="carousel-track"></div>
-        <button id="carousel-prev" class="carousel-btn left">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#chevron-left"></use>
-          </svg>
-        </button>
-        <button id="carousel-next" class="carousel-btn right">
-          <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="#chevron-right"></use>
-          </svg>
-        </button>
+        <button id="carousel-prev" class="carousel-btn left">‹</button>
+        <button id="carousel-next" class="carousel-btn right">›</button>
       </div>
     </section>
 
@@ -411,6 +413,15 @@
           stroke-width="2"
           stroke-linecap="round"
         />
+      </symbol>
+      <symbol id="email-icon" viewBox="0 0 24 24">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </symbol>
+      <symbol id="lock-icon" viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <circle cx="12" cy="16" r="1"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
       </symbol>
     </svg>
 
