@@ -14,8 +14,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 const html = document.documentElement;
-const darkToggle = document.getElementById("dark-toggle");
-const darkIcon = document.getElementById("dark-icon");
+const darkToggle = document.getElementById('dark-toggle');
+const darkIcon = document.getElementById('dark-icon-class');
 function setDarkMode(on) {
   if (on) {
     html.classList.add("dark");
