@@ -287,3 +287,44 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
   .section-title { font-size: 2rem; text-align: left; }
   .navbar { padding: 0.8rem 1rem; }
 }
+
+/* --- Filter Pills --- */
+.filter-container {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  border: 1px solid #ddd;
+  background: transparent;
+  color: var(--neutral);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+html.dark .filter-btn {
+  border-color: #444;
+  color: #ccc;
+}
+html.dark .filter-btn.active {
+  color: #fff;
+  border-color: var(--accent);
+}

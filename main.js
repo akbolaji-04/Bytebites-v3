@@ -1,13 +1,13 @@
 import { db, auth, googleProvider } from './firebase-config.js';
 import {
-  collection, getDocs, addDoc, serverTimestamp, doc, getDoc
+  collection, getDocs, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
   signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
   signInWithPopup, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// --- Dark Mode ---
+// --- 1. Dark Mode ---
 const html = document.documentElement;
 const darkToggle = document.getElementById('dark-toggle');
 const darkIcon = document.getElementById('dark-icon');
@@ -15,20 +15,21 @@ const darkIcon = document.getElementById('dark-icon');
 function setDarkMode(on) {
   if (on) {
     html.classList.add('dark');
-    if(darkIcon) darkIcon.className = 'ri-sun-line';
+    if (darkIcon) darkIcon.className = 'ri-sun-line';
     localStorage.setItem('theme', 'dark');
   } else {
     html.classList.remove('dark');
-    if(darkIcon) darkIcon.className = 'ri-moon-line';
+    if (darkIcon) darkIcon.className = 'ri-moon-line';
     localStorage.setItem('theme', 'light');
   }
 }
-if(darkToggle) {
-    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
-    setDarkMode(localStorage.getItem('theme') === 'dark');
+
+if (darkToggle) {
+  darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
+  setDarkMode(localStorage.getItem('theme') === 'dark');
 }
 
-// --- Auth System ---
+// --- 2. Auth System ---
 const authModal = document.getElementById('auth-modal');
 const authBtn = document.getElementById('auth-btn');
 const closeAuth = document.getElementById('close-auth');
@@ -40,80 +41,80 @@ const userAvatar = document.getElementById('user-avatar');
 let isSignIn = true;
 
 function showAuthModal(signIn = true) {
-  if(!authModal) return;
+  if (!authModal) return;
   isSignIn = signIn;
   authTitle.textContent = signIn ? 'Sign In' : 'Sign Up';
   toggleAuthMode.textContent = signIn ? "Don't have an account? Sign Up" : "Already have an account? Sign In";
   authModal.classList.remove('hidden');
 }
-function hideAuthModal() { if(authModal) authModal.classList.add('hidden'); }
 
-if(authBtn) authBtn.onclick = () => showAuthModal(true);
-if(closeAuth) closeAuth.onclick = hideAuthModal;
-if(toggleAuthMode) toggleAuthMode.onclick = () => showAuthModal(!isSignIn);
-if(authModal) authModal.onclick = e => { if (e.target === authModal) hideAuthModal(); };
-
-if(authForm) {
-    authForm.onsubmit = async e => {
-      e.preventDefault();
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
-      try {
-        if (isSignIn) {
-          await signInWithEmailAndPassword(auth, email, password);
-        } else {
-          await createUserWithEmailAndPassword(auth, email, password);
-        }
-        hideAuthModal();
-      } catch (err) { alert(err.message); }
-    };
+function hideAuthModal() {
+  if (authModal) authModal.classList.add('hidden');
 }
 
-if(googleSignin) {
-    googleSignin.onclick = async () => {
-      try {
-        await signInWithPopup(auth, googleProvider);
-        hideAuthModal();
-      } catch (err) { console.error(err); }
-    };
+if (authBtn) authBtn.onclick = () => showAuthModal(true);
+if (closeAuth) closeAuth.onclick = hideAuthModal;
+if (toggleAuthMode) toggleAuthMode.onclick = () => showAuthModal(!isSignIn);
+if (authModal) authModal.onclick = e => { if (e.target === authModal) hideAuthModal(); };
+
+if (authForm) {
+  authForm.onsubmit = async e => {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    try {
+      if (isSignIn) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+      hideAuthModal();
+    } catch (err) { alert(err.message); }
+  };
+}
+
+if (googleSignin) {
+  googleSignin.onclick = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      hideAuthModal();
+    } catch (err) { console.error(err); }
+  };
 }
 
 onAuthStateChanged(auth, user => {
   if (user) {
-    if(authBtn) authBtn.style.display = 'none';
-    if(userAvatar) {
-        userAvatar.style.display = 'block';
-        // Fix: Ensure photoURL is never null to prevent errors
-        userAvatar.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email || 'User')}`;
+    if (authBtn) authBtn.style.display = 'none';
+    if (userAvatar) {
+      userAvatar.style.display = 'block';
+      userAvatar.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}`;
     }
   } else {
-    if(authBtn) authBtn.style.display = 'block';
-    if(userAvatar) userAvatar.style.display = 'none';
+    if (authBtn) authBtn.style.display = 'block';
+    if (userAvatar) userAvatar.style.display = 'none';
   }
 });
 
-if(userAvatar) userAvatar.onclick = () => { if (confirm('Sign out?')) signOut(auth); };
+if (userAvatar) userAvatar.onclick = () => { if (confirm('Sign out?')) signOut(auth); };
 
-// --- Data & State ---
+// --- 3. Data & State ---
 let specials = [];
-let menuItems = [];
+let menuItems = []; // Stores ALL items
 let cart = JSON.parse(localStorage.getItem('cart') || '{}');
+let currentFilter = 'all'; // Default filter
 
-// --- Carousel (Cinematic Hero) ---
+// --- 4. Carousel (Cinematic Hero) ---
 const carouselTrack = document.getElementById('carousel-track');
 let carouselIndex = 0;
 let carouselInterval = null;
 
 async function loadSpecials() {
   try {
-      const snap = await getDocs(collection(db, 'chefSpecials'));
-      specials = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderCarousel();
-      startCarouselAutoSlide();
-  } catch (err) {
-      console.error("Error loading specials:", err);
-      // alert("Error loading specials: " + err.message); // Uncomment if needed for debugging
-  }
+    const snap = await getDocs(collection(db, 'chefSpecials'));
+    specials = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderCarousel();
+    startCarouselAutoSlide();
+  } catch (err) { console.error(err); }
 }
 
 function renderCarousel() {
@@ -123,14 +124,13 @@ function renderCarousel() {
   carouselTrack.innerHTML = `
     <div style="position:relative; width:100%; height:100%;">
       <img src="${s.imageURL}" class="carousel-img" alt="${s.name}" onerror="this.src='https://via.placeholder.com/800x400?text=Delicious+Food'"/>
-      <div class="carousel-overlay">
+      <div class="carousel-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:2rem; color:white;">
         <h3>${s.name}</h3>
         <p>${s.description}</p>
-        <div style="margin-top:1rem; font-weight:700; font-size:1.2rem; color:#FFD700;">₦${Number(s.price).toLocaleString()}</div>
+        <div style="margin-top:0.5rem; font-weight:700; font-size:1.2rem; color:#FFD700;">₦${Number(s.price).toLocaleString()}</div>
       </div>
     </div>
   `;
-  
   carouselTrack.onclick = () => showSpecialModal(s);
 }
 
@@ -146,38 +146,62 @@ function startCarouselAutoSlide() {
 const prevBtn = document.getElementById('carousel-prev');
 const nextBtn = document.getElementById('carousel-next');
 
-if(prevBtn) prevBtn.onclick = () => {
+if (prevBtn) prevBtn.onclick = () => {
   if (!specials.length) return;
   carouselIndex = (carouselIndex - 1 + specials.length) % specials.length;
   renderCarousel();
   startCarouselAutoSlide();
 };
-if(nextBtn) nextBtn.onclick = () => {
+if (nextBtn) nextBtn.onclick = () => {
   if (!specials.length) return;
   carouselIndex = (carouselIndex + 1) % specials.length;
   renderCarousel();
   startCarouselAutoSlide();
 };
 
-// --- Menu Grid (Premium Cards) ---
+// --- 5. Menu Grid & Filtering (UPDATED) ---
 const menuGrid = document.getElementById('menu-grid');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+// Setup Filter Listeners
+filterBtns.forEach(btn => {
+  btn.onclick = () => {
+    // Remove active class from all
+    filterBtns.forEach(b => b.classList.remove('active'));
+    // Add active to clicked
+    btn.classList.add('active');
+    
+    // Update state and re-render
+    currentFilter = btn.dataset.filter;
+    renderMenu();
+  };
+});
 
 async function loadMenu() {
   try {
-      const snap = await getDocs(collection(db, 'menuItems'));
-      menuItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderMenu();
-  } catch (err) {
-      console.error("Error loading menu:", err);
-      // alert("Error loading menu: " + err.message); // Uncomment if needed for debugging
-  }
+    const snap = await getDocs(collection(db, 'menuItems'));
+    menuItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderMenu();
+  } catch (err) { console.error(err); }
 }
 
 function renderMenu() {
-  if(!menuGrid) return;
-  menuGrid.innerHTML = menuItems.map(item => {
-    let qty = Number(cart[item.id]);
-    if (!Number.isFinite(qty) || qty < 1) qty = 1;
+  if (!menuGrid) return;
+
+  // 1. Filter Logic
+  const filteredItems = currentFilter === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === currentFilter);
+
+  // 2. Empty State
+  if (filteredItems.length === 0) {
+    menuGrid.innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:2rem; color:#888;">No items found in this category.</div>`;
+    return;
+  }
+
+  // 3. Render Cards
+  menuGrid.innerHTML = filteredItems.map(item => {
+    let qty = Number(cart[item.id]) || 1; // Default to 1 for display logic
 
     return `
       <div class="card">
@@ -220,46 +244,44 @@ function attachMenuListeners() {
     btn.onclick = (e) => {
       e.stopPropagation();
       const id = btn.dataset.id;
-      const qty = parseInt(document.getElementById(`qty-value-${id}`).textContent);
+      const qtyDisplay = document.getElementById(`qty-value-${id}`);
+      const qty = qtyDisplay ? parseInt(qtyDisplay.textContent) : 1;
       addToCart(id, qty);
     };
   });
 }
 
-// --- Special Modal ---
+// --- 6. Special Modal ---
 let specialModal = null;
 function showSpecialModal(special) {
   if (specialModal) specialModal.remove();
   
   specialModal = document.createElement('div');
-  specialModal.className = 'modal';
+  specialModal.id = 'special-modal'; // Matches CSS
   specialModal.innerHTML = `
     <div class="modal-content">
-      <button class="modal-close"><i class="ri-close-line"></i></button>
-      <img src="${special.imageURL}" style="width:100%; height:250px; object-fit:cover; border-radius:16px; margin-bottom:1rem;">
-      <h2 style="font-family:'Playfair Display',serif; margin-bottom:0.5rem;">${special.name}</h2>
-      <p style="color:#666; margin-bottom:1.5rem; line-height:1.6;">${special.description}</p>
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:1.5rem; font-weight:700; color:var(--accent);">₦${Number(special.price).toLocaleString()}</span>
-        <button class="btn-primary add-special-btn">Add to Cart</button>
-      </div>
+      <button class="close-btn"><i class="ri-close-line"></i></button>
+      <img src="${special.imageURL}" class="special-img" onerror="this.src='https://via.placeholder.com/400'"/>
+      <h2 class="special-title">${special.name}</h2>
+      <p class="special-desc">${special.description}</p>
+      <div class="special-price">₦${Number(special.price).toLocaleString()}</div>
+      <button class="add-cart-btn">Add to Cart</button>
     </div>
   `;
   document.body.appendChild(specialModal);
 
-  const closeBtn = specialModal.querySelector('.modal-close');
-  if(closeBtn) closeBtn.onclick = () => specialModal.remove();
+  const closeBtn = specialModal.querySelector('.close-btn');
+  closeBtn.onclick = () => specialModal.remove();
+  specialModal.onclick = (e) => { if (e.target === specialModal) specialModal.remove(); };
   
-  specialModal.onclick = (e) => { if(e.target === specialModal) specialModal.remove(); };
-  
-  const addBtn = specialModal.querySelector('.add-special-btn');
-  if(addBtn) addBtn.onclick = () => {
+  const addBtn = specialModal.querySelector('.add-cart-btn');
+  addBtn.onclick = () => {
     addToCart(special.id, 1);
     specialModal.remove();
   };
 }
 
-// --- Cart System ---
+// --- 7. Cart System ---
 const cartDrawer = document.getElementById('cart-drawer');
 const cartItemsDiv = document.getElementById('cart-items');
 const cartSubtotal = document.getElementById('cart-subtotal');
@@ -267,14 +289,14 @@ const cartCount = document.getElementById('cart-count');
 const cartBtn = document.getElementById('cart-btn');
 const closeCartBtn = document.getElementById('close-cart');
 
-if(cartBtn) cartBtn.onclick = () => cartDrawer.classList.add('open');
-if(closeCartBtn) closeCartBtn.onclick = () => cartDrawer.classList.remove('open');
+if (cartBtn) cartBtn.onclick = () => cartDrawer.classList.add('open');
+if (closeCartBtn) closeCartBtn.onclick = () => cartDrawer.classList.remove('open');
 
 function addToCart(id, qty) {
   cart[id] = (cart[id] || 0) + qty;
   saveCart();
   renderCart();
-  if(cartDrawer) cartDrawer.classList.add('open');
+  if (cartDrawer) cartDrawer.classList.add('open');
 }
 
 window.updateCartQty = (id, newQty) => {
@@ -294,9 +316,9 @@ function saveCart() {
 
 function updateCartCount() {
   const count = Object.values(cart).reduce((a, b) => a + b, 0);
-  if(cartCount) {
-      cartCount.textContent = count;
-      cartCount.classList.toggle('hidden', count === 0);
+  if (cartCount) {
+    cartCount.textContent = count;
+    cartCount.classList.toggle('hidden', count === 0);
   }
 }
 
@@ -304,7 +326,7 @@ function renderCart() {
   if (!cartItemsDiv) return;
   if (Object.keys(cart).length === 0) {
     cartItemsDiv.innerHTML = '<p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>';
-    if(cartSubtotal) cartSubtotal.textContent = '₦0.00';
+    if (cartSubtotal) cartSubtotal.textContent = '₦0.00';
     return;
   }
 
@@ -313,75 +335,74 @@ function renderCart() {
 
   cartItemsDiv.innerHTML = Object.entries(cart).map(([id, qty]) => {
     const item = allItems.find(i => i.id === id);
-    if (!item) return ''; // Skip items not found
+    if (!item) return '';
     total += item.price * qty;
 
     return `
-      <div class="cart-item">
-        <img src="${item.imageURL}" class="cart-item-img">
-        <div class="cart-item-info">
-          <div class="cart-item-title">${item.name}</div>
-          <div class="cart-item-price">₦${(item.price * qty).toLocaleString()}</div>
+      <div class="cart-item-row">
+        <img src="${item.imageURL}" class="cart-img" onerror="this.src='https://via.placeholder.com/60'"/>
+        <div class="cart-item-details">
+          <h5>${item.name}</h5>
+          <div style="font-size:0.9rem; color:#888;">₦${Number(item.price).toLocaleString()}</div>
         </div>
-        <div class="qty-selector">
+        <div class="cart-item-controls">
           <button class="qty-btn" onclick="updateCartQty('${id}', ${qty - 1})">-</button>
-          <div class="qty-val">${qty}</div>
+          <span>${qty}</span>
           <button class="qty-btn" onclick="updateCartQty('${id}', ${qty + 1})">+</button>
         </div>
       </div>
     `;
   }).join('');
 
-  if(cartSubtotal) cartSubtotal.textContent = `₦${total.toLocaleString()}`;
+  if (cartSubtotal) cartSubtotal.textContent = `₦${total.toLocaleString()}`;
   updateCartCount();
 }
 
-// --- Checkout Mockup ---
+// --- 8. Checkout Mockup ---
 const checkoutBtn = document.getElementById('checkout-btn');
 const orderConfirmation = document.getElementById('order-confirmation');
 const closeConfirmation = document.getElementById('close-confirmation');
 
-if(checkoutBtn) {
-    checkoutBtn.onclick = async () => {
-      if (!auth.currentUser) {
-        alert('Please sign in to complete your order.');
-        showAuthModal(true);
-        return;
-      }
-      if (Object.keys(cart).length === 0) return;
+if (checkoutBtn) {
+  checkoutBtn.onclick = async () => {
+    if (!auth.currentUser) {
+      alert('Please sign in to complete your order.');
+      showAuthModal(true);
+      return;
+    }
+    if (Object.keys(cart).length === 0) return;
 
-      try {
-        const allItems = [...menuItems, ...specials];
-        const orderItems = Object.entries(cart).map(([id, qty]) => {
-          const item = allItems.find(i => i.id === id);
-          if(!item) return null;
-          return { name: item.name, price: item.price, qty };
-        }).filter(i => i !== null);
+    try {
+      const allItems = [...menuItems, ...specials];
+      const orderItems = Object.entries(cart).map(([id, qty]) => {
+        const item = allItems.find(i => i.id === id);
+        if (!item) return null;
+        return { name: item.name, price: item.price, qty };
+      }).filter(i => i !== null);
 
-        await addDoc(collection(db, 'orders'), {
-          userId: auth.currentUser.uid,
-          userEmail: auth.currentUser.email,
-          items: orderItems,
-          total: parseInt(cartSubtotal.textContent.replace(/\D/g, '')),
-          createdAt: serverTimestamp(),
-          status: 'pending'
-        });
+      await addDoc(collection(db, 'orders'), {
+        userId: auth.currentUser.uid,
+        userEmail: auth.currentUser.email,
+        items: orderItems,
+        total: parseInt(cartSubtotal.textContent.replace(/\D/g, '')),
+        createdAt: serverTimestamp(),
+        status: 'pending'
+      });
 
-        cart = {};
-        saveCart();
-        renderCart();
-        if(cartDrawer) cartDrawer.classList.remove('open');
-        if(orderConfirmation) orderConfirmation.classList.remove('hidden');
-      } catch (err) {
-        alert('Order failed: ' + err.message);
-      }
-    };
+      cart = {};
+      saveCart();
+      renderCart();
+      if (cartDrawer) cartDrawer.classList.remove('open');
+      if (orderConfirmation) orderConfirmation.classList.remove('hidden');
+    } catch (err) {
+      alert('Order failed: ' + err.message);
+    }
+  };
 }
 
-if(closeConfirmation) closeConfirmation.onclick = () => orderConfirmation.classList.add('hidden');
+if (closeConfirmation) closeConfirmation.onclick = () => orderConfirmation.classList.add('hidden');
 
-// --- Initialization ---
-// We start these immediately
+// --- 9. Initialization ---
 loadSpecials();
 loadMenu();
 renderCart();
