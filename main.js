@@ -121,17 +121,24 @@ function renderCarousel() {
   if (!specials.length || !carouselTrack) return;
   const s = specials[carouselIndex];
   
+  // 1. Render the HTML
   carouselTrack.innerHTML = `
-    <div style="position:relative; width:100%; height:100%;">
+    <div style="position:relative; width:100%; height:100%; cursor:pointer;">
       <img src="${s.imageURL}" class="carousel-img" alt="${s.name}" onerror="this.src='https://via.placeholder.com/800x400?text=Delicious+Food'"/>
-      <div class="carousel-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:2rem; color:white;">
+      <div class="carousel-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:2rem; color:white; pointer-events:none;">
         <h3>${s.name}</h3>
         <p>${s.description}</p>
         <div style="margin-top:0.5rem; font-weight:700; font-size:1.2rem; color:#FFD700;">₦${Number(s.price).toLocaleString()}</div>
       </div>
     </div>
   `;
-  carouselTrack.onclick = () => showSpecialModal(s);
+  
+  // 2. Attach Click Listener explicitly to the first child (the wrapper div)
+  const wrapper = carouselTrack.firstElementChild;
+  wrapper.addEventListener('click', () => {
+    console.log("Carousel Clicked:", s); // Check console if this fires
+    showSpecialModal(s);
+  });
 }
 
 function startCarouselAutoSlide() {

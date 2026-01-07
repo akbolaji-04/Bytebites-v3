@@ -4,12 +4,23 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// Auth Check
+// --- 1. Smart Auth Check (Fixes Redirect Loop) ---
 onAuthStateChanged(auth, user => {
-    if (!user) {
-        window.location.href = 'index.html'; 
-    } else {
+    if (user) {
+        // User is logged in
+        console.log("Logged in as Admin:", user.email); // Check console for this email!
         document.getElementById('admin-email').textContent = user.email;
+    } else {
+        // User is NOT logged in
+        console.warn("No user found. You should be logged in.");
+        // We do NOT redirect instantly anymore. Instead, we show a button.
+        document.body.innerHTML = `
+            <div style="text-align:center; margin-top:50px; font-family:sans-serif;">
+                <h1>Access Denied</h1>
+                <p>You are not logged in.</p>
+                <a href="index.html" style="background:#FF6B35; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">Go to Login</a>
+            </div>
+        `;
     }
 });
 
@@ -17,7 +28,7 @@ document.getElementById('logout-btn').onclick = () => {
     signOut(auth).then(() => window.location.href = 'index.html');
 };
 
-// 1. Order Listener
+// --- 2. Order Listener ---
 const ordersGrid = document.getElementById('orders-grid');
 const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
@@ -64,7 +75,7 @@ window.updateStatus = async (id, status) => {
     catch (e) { alert(e.message); }
 };
 
-// 2. Add Product Logic
+// --- 3. Add Product Logic ---
 const productForm = document.getElementById('add-product-form');
 productForm.onsubmit = async (e) => {
     e.preventDefault();
@@ -78,13 +89,14 @@ productForm.onsubmit = async (e) => {
             description: document.getElementById('p-desc').value,
             price: parseFloat(document.getElementById('p-price').value),
             imageURL: document.getElementById('p-image').value,
-            category: document.getElementById('p-category').value, // <--- NEW FIELD
+            category: document.getElementById('p-category').value, 
             createdAt: serverTimestamp()
         });
         alert("Saved!");
         productForm.reset();
     } catch (err) {
-        alert("Error: " + err.message);
+        console.error("Firebase Error:", err);
+        alert("Error: " + err.message + "\n\n(Check Console for Email mismatch)");
     } finally {
         btn.disabled = false;
         btn.textContent = "Publish Item";
