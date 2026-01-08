@@ -312,7 +312,7 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 
 html.dark .filter-btn {
   border-color: #444;
-  color: #ffffff;
+  color: #ccc;
 }
 html.dark .filter-btn.active {
   color: #fff;
@@ -353,18 +353,6 @@ html.dark input, html.dark textarea, html.dark select {
   background-color: #2a2d35 !important;
   color: #fff !important;
   border-color: #444 !important;
-}
-
-/* Add this rule to change all button text color in dark mode */
-html.dark button {
-  color: black !important; /* Adjust to your preferred color, e.g., #ffffff for white or #b0b0b0 for softer gray */
-}
-
-/* If specific buttons need overrides (e.g., to ensure contrast), add after the above */
-html.dark .btn-primary,
-html.dark .add-btn,
-html.dark .checkout-btn {
-  color: black!important; /* Keep white for accent buttons if needed */
 }
 
 #cart-drawer img,
