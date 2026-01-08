@@ -349,7 +349,7 @@ function addToCart(id, qty) {
   cart[id] = (cart[id] || 0) + qty;
   saveCart();
   renderCart();
-  if (cartDrawer) cartDrawer.classList.add('open');
+  //if (cartDrawer) cartDrawer.classList.add('open');
 }
 
 window.updateCartQty = (id, newQty) => {
@@ -463,12 +463,22 @@ document.addEventListener('click', (event) => {
   const cartDrawer = document.getElementById('cart-drawer');
   const cartBtn = document.getElementById('cart-btn');
 
-  if (!cartDrawer || !cartBtn) return;
+ // 1. Prevent clicks INSIDE the drawer from closing it
+if (cartDrawer) {
+  cartDrawer.addEventListener('click', (event) => {
+    event.stopPropagation(); // This stops the click from reaching the document listener
+  });
+}
 
-  if (cartDrawer.classList.contains('open') &&
-      !cartDrawer.contains(event.target) &&
+// 2. Only close if clicking OUTSIDE
+document.addEventListener('click', (event) => {
+  const cartBtn = document.getElementById('cart-btn');
+
+  // If cart is open AND click is NOT on the open button
+  if (cartDrawer && cartDrawer.classList.contains('open') && 
       !cartBtn.contains(event.target)) {
-
+    
     cartDrawer.classList.remove('open');
   }
+});
 });
