@@ -119,7 +119,7 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
   background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
   padding: 4rem 2rem 2rem;
   color: white;
-  text-align: left;
+  text-align: center;
 }
 .carousel-overlay h3 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 0; }
 .carousel-overlay p { font-size: 1.1rem; opacity: 0.9; margin: 0.5rem 0; }
@@ -407,3 +407,22 @@ html.dark input, html.dark textarea, html.dark select {
 html.dark .site-footer { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent), var(--bg-card); border-top-color: rgba(255,255,255,0.04); color: var(--text-sub); }
 html.dark .site-footer .social a:hover { background: rgba(255,255,255,0.03); color: #fff; }
 
+
+/* --- Fix for Chef's Special Modal Image --- */
+.special-img {
+  width: 100%;
+  height: 250px; /* Limits the height so it doesn't overflow */
+  object-fit: cover; /* Ensures image doesn't stretch/distort */
+  border-radius: 16px; /* Matches your theme's radius */
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  display: block; /* Removes potential inline-block spacing issues */
+}
+
+/* Ensure the modal content is centered and doesn't get too tall */
+.modal-content {
+  max-height: 90vh; /* Prevents modal from being taller than screen */
+  overflow-y: auto; /* Adds scroll if content is too long */
+  display: flex;
+  flex-direction: column;
+}

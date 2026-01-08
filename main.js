@@ -149,7 +149,7 @@ function renderCarousel() {
 
   const wrapper = carouselTrack.firstElementChild;
   // Ensure clicks anywhere on the carousel track open the special modal (robust on desktop)
-  if (carouselTrack) {
+ if (carouselTrack) {
     carouselTrack.onclick = () => {
       try { showSpecialModal(s); } catch (err) { console.error(err); }
     };
