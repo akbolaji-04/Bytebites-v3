@@ -32,6 +32,26 @@
         .status-ready { background: #d4edda; color: #155724; }
         .status-delivered { background: #e2e3e5; color: #383d41; text-decoration: line-through; }
 
+        /* NEW: Order Action Buttons */
+        .btn-status { 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            transition: all 0.2s;
+            flex: 1; 
+        }
+        .btn-cook { background: #e3f2fd; color: #1976d2; }
+        .btn-cook:hover { background: #bbdefb; }
+        
+        .btn-ready { background: #e8f5e9; color: #388e3c; }
+        .btn-ready:hover { background: #c8e6c9; }
+        
+        .btn-done { background: #f5f5f5; color: #616161; }
+        .btn-done:hover { background: #e0e0e0; }
+
         /* Menu Item List */
         .menu-item-row { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid #eee; align-items: center; }
         .menu-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; }
