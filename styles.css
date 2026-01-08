@@ -320,7 +320,7 @@ html.dark .filter-btn.active {
 }
 
 html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
-  color: blue !important;
+  color: #fff !important;
 }
 
 html.dark p, html.dark span, html.dark li, html.dark div {
