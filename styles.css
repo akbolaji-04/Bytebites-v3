@@ -312,7 +312,7 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 
 html.dark .filter-btn {
   border-color: #444;
-  color: #ccc;
+  color: blue;
 }
 html.dark .filter-btn.active {
   color: #fff;
