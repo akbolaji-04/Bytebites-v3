@@ -328,3 +328,45 @@ html.dark .filter-btn.active {
   color: #fff;
   border-color: var(--accent);
 }
+
+/* --- DARK MODE TEXT FIXES --- */
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+  color: #ffffff !important;
+}
+
+html.dark p, html.dark span, html.dark li, html.dark div {
+  color: #e0e0e0;
+}
+
+/* Fix for Card Descriptions specifically */
+html.dark .card-desc {
+  color: #b0b0b0 !important;
+}
+
+/* Fix for Price Tags */
+html.dark .card-price, html.dark .special-price {
+  color: var(--accent-light) !important;
+}
+
+/* Fix for Cart Text */
+html.dark .cart-drawer, html.dark .cart-item-details h5 {
+  color: #ffffff !important;
+}
+
+/* Fix for Filter Buttons in Dark Mode */
+html.dark .filter-btn {
+  color: #e0e0e0;
+  border-color: #444;
+}
+html.dark .filter-btn.active {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* Fix for Inputs and Dropdowns */
+html.dark input, html.dark textarea, html.dark select {
+  background-color: #2a2d35 !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
