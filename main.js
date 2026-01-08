@@ -4,7 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
   signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
-  signInWithPopup, onAuthStateChanged
+  signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 const html = document.documentElement;
@@ -23,10 +23,29 @@ function setDarkMode(on) {
   }
 }
 
-if (darkToggle) {
-  darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
-  setDarkMode(localStorage.getItem('theme') === 'dark');
+// initialize theme: prefer user's system setting unless they previously chose a theme
+const themePref = localStorage.getItem('theme');
+const mql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+if (themePref) {
+  setDarkMode(themePref === 'dark');
+} else if (mql) {
+  setDarkMode(mql.matches);
+  // if system preference changes and user hasn't chosen manually, adapt
+  try { mql.addEventListener ? mql.addEventListener('change', e => { if (!localStorage.getItem('theme')) setDarkMode(e.matches); }) : mql.addListener(e => { if (!localStorage.getItem('theme')) setDarkMode(e.matches); }); } catch (err) {}
 }
+if (darkToggle) {
+  darkToggle.onclick = () => {
+    // user manually toggles -> override system preference
+    setDarkMode(!html.classList.contains('dark'));
+  };
+}
+
+// ensure Firebase auth uses persistent (local) persistence so users stay signed in
+try {
+  setPersistence(auth, browserLocalPersistence).catch(err => {
+    console.warn('Could not set auth persistence:', err);
+  });
+} catch (err) { console.warn('Auth persistence setup failed', err); }
 
 const authModal = document.getElementById('auth-modal');
 const authBtn = document.getElementById('auth-btn');
@@ -129,10 +148,12 @@ function renderCarousel() {
   `;
 
   const wrapper = carouselTrack.firstElementChild;
-  wrapper.addEventListener('click', () => {
-    console.log("Carousel Clicked:", s);
-    showSpecialModal(s);
-  });
+  // Ensure clicks anywhere on the carousel track open the special modal (robust on desktop)
+  if (carouselTrack) {
+    carouselTrack.onclick = () => {
+      try { showSpecialModal(s); } catch (err) { console.error(err); }
+    };
+  }
 }
 
 function startCarouselAutoSlide() {
@@ -147,18 +168,54 @@ function startCarouselAutoSlide() {
 const prevBtn = document.getElementById('carousel-prev');
 const nextBtn = document.getElementById('carousel-next');
 
-if (prevBtn) prevBtn.onclick = () => {
-  if (!specials.length) return;
-  carouselIndex = (carouselIndex - 1 + specials.length) % specials.length;
-  renderCarousel();
-  startCarouselAutoSlide();
-};
-if (nextBtn) nextBtn.onclick = () => {
+// Remove arrow button handlers (we now use swipe gestures). Keep variables if needed for progressive enhancement.
+
+function goToNextSpecial() {
   if (!specials.length) return;
   carouselIndex = (carouselIndex + 1) % specials.length;
   renderCarousel();
   startCarouselAutoSlide();
-};
+}
+function goToPrevSpecial() {
+  if (!specials.length) return;
+  carouselIndex = (carouselIndex - 1 + specials.length) % specials.length;
+  renderCarousel();
+  startCarouselAutoSlide();
+}
+
+// Add pointer/touch swipe support on the carousel track
+if (carouselTrack) {
+  let pointerDown = false;
+  let startX = 0;
+  let lastX = 0;
+  let pointerId = null;
+
+  carouselTrack.addEventListener('pointerdown', (e) => {
+    pointerDown = true;
+    startX = e.clientX;
+    lastX = startX;
+    pointerId = e.pointerId;
+    carouselTrack.setPointerCapture(pointerId);
+  });
+
+  carouselTrack.addEventListener('pointermove', (e) => {
+    if (!pointerDown) return;
+    lastX = e.clientX;
+  });
+
+  const endGesture = (e) => {
+    if (!pointerDown) return;
+    pointerDown = false;
+    try { if (pointerId != null) carouselTrack.releasePointerCapture(pointerId); } catch (err) {}
+    const dx = lastX - startX;
+    if (Math.abs(dx) < 40) return; // small move -> ignore
+    if (dx < 0) goToNextSpecial(); else goToPrevSpecial();
+  };
+
+  carouselTrack.addEventListener('pointerup', endGesture);
+  carouselTrack.addEventListener('pointercancel', endGesture);
+  carouselTrack.addEventListener('pointerleave', endGesture);
+}
 
 const menuGrid = document.getElementById('menu-grid');
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -252,14 +309,17 @@ function showSpecialModal(special) {
 
   specialModal = document.createElement('div');
   specialModal.id = 'special-modal';
+  specialModal.className = 'modal';
+  specialModal.setAttribute('role', 'dialog');
+  specialModal.setAttribute('aria-modal', 'true');
   specialModal.innerHTML = `
     <div class="modal-content">
-      <button class="close-btn"><i class="ri-close-line"></i></button>
+      <button class="close-btn modal-close" aria-label="Close"><i class="ri-close-line"></i></button>
       <img src="${special.imageURL}" class="special-img" onerror="this.src='https://via.placeholder.com/400'"/>
       <h2 class="special-title">${special.name}</h2>
       <p class="special-desc">${special.description}</p>
       <div class="special-price">₦${Number(special.price).toLocaleString()}</div>
-      <button class="add-cart-btn">Add to Cart</button>
+      <button class="add-cart-btn add-btn">Add to Cart</button>
     </div>
   `;
   document.body.appendChild(specialModal);

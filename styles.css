@@ -11,6 +11,10 @@
   --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
   --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.12);
   --radius: 24px;
+  --btn-bg: var(--text-main);
+  --btn-text: #ffffff;
+  --btn-primary-bg: var(--text-main);
+  --btn-primary-text: #ffffff;
 }
 
 html.dark {
@@ -19,6 +23,10 @@ html.dark {
   --text-main: #FFFFFF;
   --text-sub: #B2BEC3;
   --shadow-sm: 0 4px 6px rgba(0,0,0,0.3);
+  --btn-bg: var(--accent);
+  --btn-text: #ffffff;
+  --btn-primary-bg: var(--accent);
+  --btn-primary-text: #ffffff;
 }
 
 body {
@@ -79,7 +87,8 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 
 .btn-primary {
-  background: var(--text-main); color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   padding: 0.7rem 1.8rem; border-radius: 50px;
   font-weight: 600; border: none; cursor: pointer;
   transition: all 0.3s;
@@ -193,8 +202,8 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .qty-val { width: 30px; text-align: center; font-weight: 600; font-size: 0.9rem; }
 
 .add-btn {
-  background: var(--text-main);
-  color: white;
+  background: var(--btn-bg);
+  color: var(--btn-text);
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 14px;
@@ -204,6 +213,9 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
   transition: background 0.2s;
 }
 .add-btn:hover { background: var(--accent); }
+
+/* Ensure signup / primary buttons remain legible when toggling dark mode */
+.btn-primary, .add-btn { color: var(--btn-primary-text, var(--btn-text)) !important; }
 
 .cart-drawer {
   position: fixed; top: 0; right: 0; bottom: 0;
@@ -226,6 +238,12 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .close-cart-btn {
   width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
   background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+
+html.dark .close-cart-btn {
+  color: #fff;
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
 }
 
 .cart-items {
@@ -270,6 +288,11 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; border: none; background: #F0F0F0; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+
+/* generic close button (used by dynamic modals) */
+.close-btn { position: absolute; top: 1rem; right: 1rem; border: none; background: transparent; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--text-sub); }
+.close-btn:hover { background: rgba(0,0,0,0.04); transform: translateY(-2px); }
+html.dark .close-btn { color: #fff; }
 
 @media (max-width: 768px) {
   .menu-grid { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -364,4 +387,23 @@ html.dark input, html.dark textarea, html.dark select {
   border-radius: 8px;
   flex-shrink: 0;
 }
+
+/* Footer */
+.site-footer {
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent), var(--bg-card);
+  border-top: 1px solid rgba(0,0,0,0.04);
+  padding: 1.5rem 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-sub);
+}
+.site-footer .brand { font-weight: 700; font-family: 'Playfair Display', serif; color: var(--text-main); }
+.site-footer .social { display: flex; gap: 0.75rem; align-items: center; }
+.site-footer .social a { color: var(--text-sub); text-decoration: none; font-weight: 600; padding: 0.4rem 0.6rem; border-radius: 8px; transition: all 0.15s; }
+.site-footer .social a:hover { background: rgba(0,0,0,0.04); color: var(--text-main); transform: translateY(-2px); }
+
+html.dark .site-footer { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent), var(--bg-card); border-top-color: rgba(255,255,255,0.04); color: var(--text-sub); }
+html.dark .site-footer .social a:hover { background: rgba(255,255,255,0.03); color: #fff; }
 
