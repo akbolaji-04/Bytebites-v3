@@ -414,3 +414,23 @@ loadSpecials();
 loadMenu();
 renderCart();
 updateCartCount();
+
+// --- FIX: Close Cart When Clicking Outside ---
+document.addEventListener('click', (event) => {
+  const cartDrawer = document.getElementById('cart-drawer');
+  const cartBtn = document.getElementById('cart-btn');
+
+  // Check if elements exist to prevent errors
+  if (!cartDrawer || !cartBtn) return;
+
+  // Logic: 
+  // 1. Cart is currently OPEN
+  // 2. Click is NOT inside the Cart Drawer
+  // 3. Click is NOT on the Cart Button (otherwise it toggles twice)
+  if (cartDrawer.classList.contains('open') && 
+      !cartDrawer.contains(event.target) && 
+      !cartBtn.contains(event.target)) {
+    
+    cartDrawer.classList.remove('open');
+  }
+});

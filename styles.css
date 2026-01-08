@@ -370,3 +370,15 @@ html.dark input, html.dark textarea, html.dark select {
   color: #fff !important;
   border-color: #444 !important;
 }
+
+/* --- FIX: Enforce Cart Image Size --- */
+#cart-drawer img, 
+.cart-items img, 
+.cart-item-row img {
+  width: 60px !important;  /* Force fixed width */
+  height: 60px !important; /* Force fixed height */
+  object-fit: cover !important; /* Prevent stretching */
+  border-radius: 8px;
+  flex-shrink: 0; /* Prevent squishing */
+}
+
