@@ -1,104 +1,190 @@
 import { db, auth } from './firebase-config.js';
 import { 
-    collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, serverTimestamp 
+    collection, addDoc, deleteDoc, updateDoc, onSnapshot, query, orderBy, doc, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// --- 1. Smart Auth Check (Fixes Redirect Loop) ---
+// --- Auth Check ---
 onAuthStateChanged(auth, user => {
     if (user) {
-        // User is logged in
-        console.log("Logged in as Admin:", user.email); // <--- LOOK FOR THIS IN CONSOLE
-        const emailEl = document.getElementById('admin-email');
-        if(emailEl) emailEl.textContent = user.email;
+        document.getElementById('admin-email').textContent = user.email;
     } else {
-        // User is NOT logged in - SHOW MESSAGE INSTEAD OF REDIRECTING
-        console.warn("No user found. You should be logged in.");
-        document.body.innerHTML = `
-            <div style="text-align:center; margin-top:50px; font-family:sans-serif;">
-                <h1>Access Denied</h1>
-                <p>You are not logged in.</p>
-                <a href="index.html" style="background:#FF6B35; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">Go to Login</a>
-            </div>
-        `;
+        document.body.innerHTML = `<div style="text-align:center; margin-top:50px;"><h1>Access Denied</h1><a href="index.html">Login</a></div>`;
     }
 });
 
-document.getElementById('logout-btn').onclick = () => {
-    signOut(auth).then(() => window.location.href = 'index.html');
-};
+document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => window.location.href = 'index.html');
 
-// --- 2. Order Listener ---
+// --- 1. Live Orders ---
 const ordersGrid = document.getElementById('orders-grid');
-const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-
-onSnapshot(q, (snapshot) => {
+onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snapshot) => {
     ordersGrid.innerHTML = "";
-    if(snapshot.empty) {
-        ordersGrid.innerHTML = "<p>No active orders.</p>";
-        return;
-    }
+    if(snapshot.empty) { ordersGrid.innerHTML = "<p>No active orders.</p>"; return; }
 
     snapshot.forEach(docSnap => {
         const order = docSnap.data();
-        const orderId = docSnap.id;
-        const status = order.status || 'pending';
-        const time = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Now';
-        let statusClass = `status-${status.toLowerCase()}`;
-
+        const id = docSnap.id;
         ordersGrid.innerHTML += `
-            <div class="order-card" style="${status === 'delivered' ? 'opacity:0.6;' : ''}">
-                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; border-bottom:1px dashed #eee; padding-bottom:0.5rem;">
-                    <span style="font-family:monospace; color:#888;">#${orderId.slice(-4).toUpperCase()}</span>
-                    <span style="font-weight:600;">${time}</span>
+            <div class="order-card" style="${order.status === 'delivered' ? 'opacity:0.6' : ''}">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                    <b>#${id.slice(-4).toUpperCase()}</b> <span>${order.status}</span>
                 </div>
-                <div style="margin-bottom:1rem;">
-                    <span class="status-badge ${statusClass}">${status}</span>
-                    <span style="float:right; font-weight:bold; color:var(--accent);">₦${Number(order.total).toLocaleString()}</span>
+                <div>${order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}</div>
+                <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                    <button onclick="updateOrderStatus('${id}', 'cooking')" style="font-size:0.8rem; padding:4px;">Cook</button>
+                    <button onclick="updateOrderStatus('${id}', 'ready')" style="font-size:0.8rem; padding:4px;">Ready</button>
+                    <button onclick="updateOrderStatus('${id}', 'delivered')" style="font-size:0.8rem; padding:4px;">Done</button>
                 </div>
-                <ul style="padding-left:1rem; margin-bottom:1rem; color:#444;">
-                    ${order.items.map(i => `<li><b>${i.qty}x</b> ${i.name}</li>`).join('')}
-                </ul>
-                ${status !== 'delivered' ? `
-                <div style="display:flex; gap:0.5rem;">
-                    <button onclick="updateStatus('${orderId}', 'cooking')" style="flex:1; padding:0.5rem; border:none; background:#e3f2fd; color:#2196f3; border-radius:8px; cursor:pointer; font-weight:600;">Cook</button>
-                    <button onclick="updateStatus('${orderId}', 'ready')" style="flex:1; padding:0.5rem; border:none; background:#e8f5e9; color:#4caf50; border-radius:8px; cursor:pointer; font-weight:600;">Ready</button>
-                    <button onclick="updateStatus('${orderId}', 'delivered')" style="flex:1; padding:0.5rem; border:none; background:#eee; color:#333; border-radius:8px; cursor:pointer; font-weight:600;">Done</button>
-                </div>` : ''}
-            </div>
-        `;
+            </div>`;
     });
 });
 
-window.updateStatus = async (id, status) => {
-    try { await updateDoc(doc(db, "orders", id), { status }); } 
-    catch (e) { alert(e.message); }
+window.updateOrderStatus = async (id, status) => {
+    try { await updateDoc(doc(db, "orders", id), { status }); } catch(e) { alert(e.message); }
 };
 
-// --- 3. Add Product Logic ---
-const productForm = document.getElementById('add-product-form');
-productForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const btn = productForm.querySelector('button');
-    btn.disabled = true;
-    btn.textContent = "Saving...";
+// --- 2. Live Menu Management (Edit/Delete) ---
+const menuList = document.getElementById('menu-list');
 
-    try {
-        await addDoc(collection(db, document.getElementById('p-collection').value), {
-            name: document.getElementById('p-name').value,
-            description: document.getElementById('p-desc').value,
-            price: parseFloat(document.getElementById('p-price').value),
-            imageURL: document.getElementById('p-image').value,
-            category: document.getElementById('p-category').value, 
-            createdAt: serverTimestamp()
-        });
-        alert("Saved!");
-        productForm.reset();
-    } catch (err) {
-        console.error("Firebase Error:", err);
-        alert("Error: " + err.message + "\n\n(Check Console for Email mismatch)");
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "Publish Item";
+function loadCollection(colName) {
+    onSnapshot(collection(db, colName), (snap) => {
+        // We append to the list, so we might need to clear it first if we want a pure list, 
+        // but since we have 2 collections (menuItems + chefSpecials), handling 2 listeners is tricky.
+        // Simplified: Just re-render everything when data changes.
+        renderAllMenuItems(); 
+    });
+}
+
+// We will store items in memory to render them combined
+let allItems = [];
+
+function setupMenuListeners() {
+    onSnapshot(collection(db, 'menuItems'), (snap) => {
+        const items = snap.docs.map(d => ({id: d.id, ...d.data(), collection: 'menuItems'}));
+        updateLocalItems('menuItems', items);
+    });
+    onSnapshot(collection(db, 'chefSpecials'), (snap) => {
+        const items = snap.docs.map(d => ({id: d.id, ...d.data(), collection: 'chefSpecials'}));
+        updateLocalItems('chefSpecials', items);
+    });
+}
+
+const itemsMap = { menuItems: [], chefSpecials: [] };
+
+function updateLocalItems(col, items) {
+    itemsMap[col] = items;
+    renderAllMenuItems();
+}
+
+function renderAllMenuItems() {
+    menuList.innerHTML = "";
+    const combined = [...itemsMap.menuItems, ...itemsMap.chefSpecials];
+    
+    if(combined.length === 0) { menuList.innerHTML = "<p>No items found.</p>"; return; }
+
+    combined.forEach(item => {
+        menuList.innerHTML += `
+            <div class="menu-item-row">
+                <img src="${item.imageURL}" class="menu-item-img" onerror="this.src='https://via.placeholder.com/50'">
+                <div class="menu-item-info">
+                    <div style="font-weight:600;">${item.name}</div>
+                    <div style="font-size:0.85rem; color:#666;">₦${Number(item.price).toLocaleString()} • ${item.collection === 'chefSpecials' ? '🌟 Special' : 'Menu'}</div>
+                </div>
+                <div class="menu-item-actions">
+                    <button class="btn-icon-small btn-edit" onclick="editItem('${item.id}', '${item.collection}')"><i class="ri-pencil-line"></i></button>
+                    <button class="btn-icon-small btn-delete" onclick="deleteItem('${item.id}', '${item.collection}')"><i class="ri-delete-bin-line"></i></button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// --- 3. Form Logic (Add/Update) ---
+const form = document.getElementById('product-form');
+const submitBtn = document.getElementById('submit-btn');
+const cancelBtn = document.getElementById('cancel-btn');
+const formTitle = document.getElementById('form-title');
+const editIdInput = document.getElementById('edit-id');
+
+// Global Edit/Delete Functions
+window.deleteItem = async (id, col) => {
+    if(confirm("Are you sure you want to delete this item?")) {
+        try {
+            await deleteDoc(doc(db, col, id));
+        } catch(e) { alert("Error deleting: " + e.message); }
     }
 };
+
+window.editItem = (id, col) => {
+    // Find item data
+    const item = [...itemsMap.menuItems, ...itemsMap.chefSpecials].find(i => i.id === id);
+    if(!item) return;
+
+    // Populate Form
+    document.getElementById('p-name').value = item.name;
+    document.getElementById('p-desc').value = item.description;
+    document.getElementById('p-price').value = item.price;
+    document.getElementById('p-image').value = item.imageURL;
+    document.getElementById('p-collection').value = col;
+    document.getElementById('p-category').value = item.category || 'all';
+    
+    // Switch to Edit Mode
+    editIdInput.value = id;
+    formTitle.textContent = "Edit Item";
+    submitBtn.textContent = "Update Item";
+    submitBtn.classList.remove('btn-primary'); // Change color to indicate edit
+    submitBtn.style.background = "#2196f3"; // Blue for update
+    cancelBtn.style.display = "block";
+    
+    // Disable collection change during edit (simplifies logic)
+    document.getElementById('p-collection').disabled = true;
+};
+
+cancelBtn.onclick = () => {
+    form.reset();
+    editIdInput.value = "";
+    formTitle.textContent = "Add Item";
+    submitBtn.textContent = "Publish Item";
+    submitBtn.style.background = ""; // Reset color
+    submitBtn.classList.add('btn-primary');
+    cancelBtn.style.display = "none";
+    document.getElementById('p-collection').disabled = false;
+};
+
+form.onsubmit = async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    
+    const id = editIdInput.value;
+    const col = document.getElementById('p-collection').value;
+    
+    const data = {
+        name: document.getElementById('p-name').value,
+        description: document.getElementById('p-desc').value,
+        price: parseFloat(document.getElementById('p-price').value),
+        imageURL: document.getElementById('p-image').value,
+        category: document.getElementById('p-category').value,
+        createdAt: serverTimestamp() // Updates timestamp on edit too
+    };
+
+    try {
+        if (id) {
+            // Update Existing
+            await updateDoc(doc(db, col, id), data);
+            alert("Item Updated!");
+            cancelBtn.click(); // Reset form
+        } else {
+            // Add New
+            await addDoc(collection(db, col), data);
+            alert("Item Added!");
+            form.reset();
+        }
+    } catch(err) {
+        alert("Error: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
+    }
+};
+
+// Start Listeners
+setupMenuListeners();
