@@ -7,7 +7,6 @@ import {
   signInWithPopup, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// --- 1. Dark Mode ---
 const html = document.documentElement;
 const darkToggle = document.getElementById('dark-toggle');
 const darkIcon = document.getElementById('dark-icon');
@@ -29,7 +28,6 @@ if (darkToggle) {
   setDarkMode(localStorage.getItem('theme') === 'dark');
 }
 
-// --- 2. Auth System ---
 const authModal = document.getElementById('auth-modal');
 const authBtn = document.getElementById('auth-btn');
 const closeAuth = document.getElementById('close-auth');
@@ -97,13 +95,11 @@ onAuthStateChanged(auth, user => {
 
 if (userAvatar) userAvatar.onclick = () => { if (confirm('Sign out?')) signOut(auth); };
 
-// --- 3. Data & State ---
 let specials = [];
-let menuItems = []; // Stores ALL items
+let menuItems = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '{}');
-let currentFilter = 'all'; // Default filter
+let currentFilter = 'all';
 
-// --- 4. Carousel (Cinematic Hero) ---
 const carouselTrack = document.getElementById('carousel-track');
 let carouselIndex = 0;
 let carouselInterval = null;
@@ -120,8 +116,7 @@ async function loadSpecials() {
 function renderCarousel() {
   if (!specials.length || !carouselTrack) return;
   const s = specials[carouselIndex];
-  
-  // 1. Render the HTML
+
   carouselTrack.innerHTML = `
     <div style="position:relative; width:100%; height:100%; cursor:pointer;">
       <img src="${s.imageURL}" class="carousel-img" alt="${s.name}" onerror="this.src='https://via.placeholder.com/800x400?text=Delicious+Food'"/>
@@ -132,11 +127,10 @@ function renderCarousel() {
       </div>
     </div>
   `;
-  
-  // 2. Attach Click Listener explicitly to the first child (the wrapper div)
+
   const wrapper = carouselTrack.firstElementChild;
   wrapper.addEventListener('click', () => {
-    console.log("Carousel Clicked:", s); // Check console if this fires
+    console.log("Carousel Clicked:", s);
     showSpecialModal(s);
   });
 }
@@ -166,19 +160,16 @@ if (nextBtn) nextBtn.onclick = () => {
   startCarouselAutoSlide();
 };
 
-// --- 5. Menu Grid & Filtering (UPDATED) ---
 const menuGrid = document.getElementById('menu-grid');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
-// Setup Filter Listeners
 filterBtns.forEach(btn => {
   btn.onclick = () => {
-    // Remove active class from all
+
     filterBtns.forEach(b => b.classList.remove('active'));
-    // Add active to clicked
+
     btn.classList.add('active');
-    
-    // Update state and re-render
+
     currentFilter = btn.dataset.filter;
     renderMenu();
   };
@@ -195,20 +186,17 @@ async function loadMenu() {
 function renderMenu() {
   if (!menuGrid) return;
 
-  // 1. Filter Logic
-  const filteredItems = currentFilter === 'all' 
-    ? menuItems 
+  const filteredItems = currentFilter === 'all'
+    ? menuItems
     : menuItems.filter(item => item.category === currentFilter);
 
-  // 2. Empty State
   if (filteredItems.length === 0) {
     menuGrid.innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:2rem; color:#888;">No items found in this category.</div>`;
     return;
   }
 
-  // 3. Render Cards
   menuGrid.innerHTML = filteredItems.map(item => {
-    let qty = Number(cart[item.id]) || 1; // Default to 1 for display logic
+    let qty = Number(cart[item.id]) || 1;
 
     return `
       <div class="card">
@@ -258,13 +246,12 @@ function attachMenuListeners() {
   });
 }
 
-// --- 6. Special Modal ---
 let specialModal = null;
 function showSpecialModal(special) {
   if (specialModal) specialModal.remove();
-  
+
   specialModal = document.createElement('div');
-  specialModal.id = 'special-modal'; // Matches CSS
+  specialModal.id = 'special-modal';
   specialModal.innerHTML = `
     <div class="modal-content">
       <button class="close-btn"><i class="ri-close-line"></i></button>
@@ -280,7 +267,7 @@ function showSpecialModal(special) {
   const closeBtn = specialModal.querySelector('.close-btn');
   closeBtn.onclick = () => specialModal.remove();
   specialModal.onclick = (e) => { if (e.target === specialModal) specialModal.remove(); };
-  
+
   const addBtn = specialModal.querySelector('.add-cart-btn');
   addBtn.onclick = () => {
     addToCart(special.id, 1);
@@ -288,7 +275,6 @@ function showSpecialModal(special) {
   };
 }
 
-// --- 7. Cart System ---
 const cartDrawer = document.getElementById('cart-drawer');
 const cartItemsDiv = document.getElementById('cart-items');
 const cartSubtotal = document.getElementById('cart-subtotal');
@@ -365,7 +351,6 @@ function renderCart() {
   updateCartCount();
 }
 
-// --- 8. Checkout Mockup ---
 const checkoutBtn = document.getElementById('checkout-btn');
 const orderConfirmation = document.getElementById('order-confirmation');
 const closeConfirmation = document.getElementById('close-confirmation');
@@ -409,28 +394,21 @@ if (checkoutBtn) {
 
 if (closeConfirmation) closeConfirmation.onclick = () => orderConfirmation.classList.add('hidden');
 
-// --- 9. Initialization ---
 loadSpecials();
 loadMenu();
 renderCart();
 updateCartCount();
 
-// --- FIX: Close Cart When Clicking Outside ---
 document.addEventListener('click', (event) => {
   const cartDrawer = document.getElementById('cart-drawer');
   const cartBtn = document.getElementById('cart-btn');
 
-  // Check if elements exist to prevent errors
   if (!cartDrawer || !cartBtn) return;
 
-  // Logic: 
-  // 1. Cart is currently OPEN
-  // 2. Click is NOT inside the Cart Drawer
-  // 3. Click is NOT on the Cart Button (otherwise it toggles twice)
-  if (cartDrawer.classList.contains('open') && 
-      !cartDrawer.contains(event.target) && 
+  if (cartDrawer.classList.contains('open') &&
+      !cartDrawer.contains(event.target) &&
       !cartBtn.contains(event.target)) {
-    
+
     cartDrawer.classList.remove('open');
   }
 });

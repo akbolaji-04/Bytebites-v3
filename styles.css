@@ -29,7 +29,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- 1. Glass Navbar --- */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -87,7 +86,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-/* --- 2. Cinematic Hero --- */
 .section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
 .section-title {
   font-family: 'Playfair Display', serif;
@@ -107,7 +105,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .carousel-track { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
 .carousel-img { width: 100%; height: 450px; object-fit: cover; filter: brightness(0.9); }
 
-/* Internal Text Overlay */
 .carousel-overlay {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
@@ -132,7 +129,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .carousel-btn.left { left: 1.5rem; }
 .carousel-btn.right { right: 1.5rem; }
 
-/* --- 3. Premium Card Grid --- */
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -164,7 +160,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
 .card:hover .card-img { transform: scale(1.05); }
 
-/* Floating Price Tag */
 .price-tag {
   position: absolute; bottom: 10px; right: 10px;
   background: white; color: var(--text-main);
@@ -210,7 +205,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 .add-btn:hover { background: var(--accent); }
 
-/* --- 4. Polished Cart Drawer --- */
 .cart-drawer {
   position: fixed; top: 0; right: 0; bottom: 0;
   width: 400px; max-width: 100%;
@@ -245,7 +239,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 .cart-item-title { font-weight: 600; margin: 0 0 0.3rem 0; font-size: 1rem; }
 .cart-item-price { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
 
-/* Fixed Bottom Checkout */
 .cart-footer {
   padding: 2rem;
   background: var(--bg-card);
@@ -262,7 +255,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 .checkout-btn:hover { background: var(--accent); }
 
-/* --- 5. Modal --- */
 .modal {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
@@ -279,7 +271,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; border: none; background: #F0F0F0; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
 
-/* Mobile Optimizations */
 @media (max-width: 768px) {
   .menu-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .card-img-wrapper { height: 200px; }
@@ -288,7 +279,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
   .navbar { padding: 0.8rem 1rem; }
 }
 
-/* --- Filter Pills --- */
 .filter-container {
   display: flex;
   gap: 0.8rem;
@@ -329,31 +319,26 @@ html.dark .filter-btn.active {
   border-color: var(--accent);
 }
 
-/* --- DARK MODE TEXT FIXES --- */
 html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
-  color: #ffffff !important;
+  color: blue !important;
 }
 
 html.dark p, html.dark span, html.dark li, html.dark div {
   color: #e0e0e0;
 }
 
-/* Fix for Card Descriptions specifically */
 html.dark .card-desc {
   color: #b0b0b0 !important;
 }
 
-/* Fix for Price Tags */
 html.dark .card-price, html.dark .special-price {
   color: var(--accent-light) !important;
 }
 
-/* Fix for Cart Text */
 html.dark .cart-drawer, html.dark .cart-item-details h5 {
   color: #ffffff !important;
 }
 
-/* Fix for Filter Buttons in Dark Mode */
 html.dark .filter-btn {
   color: #e0e0e0;
   border-color: #444;
@@ -364,21 +349,19 @@ html.dark .filter-btn.active {
   background: var(--accent);
 }
 
-/* Fix for Inputs and Dropdowns */
 html.dark input, html.dark textarea, html.dark select {
   background-color: #2a2d35 !important;
   color: #fff !important;
   border-color: #444 !important;
 }
 
-/* --- FIX: Enforce Cart Image Size --- */
-#cart-drawer img, 
-.cart-items img, 
+#cart-drawer img,
+.cart-items img,
 .cart-item-row img {
-  width: 60px !important;  /* Force fixed width */
-  height: 60px !important; /* Force fixed height */
-  object-fit: cover !important; /* Prevent stretching */
+  width: 60px !important;
+  height: 60px !important;
+  object-fit: cover !important;
   border-radius: 8px;
-  flex-shrink: 0; /* Prevent squishing */
+  flex-shrink: 0;
 }
 

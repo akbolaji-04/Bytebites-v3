@@ -9,21 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         body { background-color: #f4f5f7; }
-        .admin-container { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            padding: 2rem; 
-            display: grid; 
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
             grid-template-columns: 1fr 1fr 350px; /* 3 Columns now */
-            gap: 2rem; 
+            gap: 2rem;
         }
-        
+
         .admin-header { background: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .admin-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-        
+
         .section-card { background: #fff; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: fit-content; max-height: 85vh; overflow-y: auto; }
         .section-title { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 1.2rem; }
-        
+
         /* Order Cards */
         .order-card { background: #fff; padding: 1rem; border-radius: 12px; border: 1px solid #eee; margin-bottom: 1rem; }
         .status-badge { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
@@ -33,22 +33,22 @@
         .status-delivered { background: #e2e3e5; color: #383d41; text-decoration: line-through; }
 
         /* NEW: Order Action Buttons */
-        .btn-status { 
-            padding: 0.5rem 1rem; 
-            border-radius: 8px; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
+        .btn-status {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
             transition: all 0.2s;
-            flex: 1; 
+            flex: 1;
         }
         .btn-cook { background: #e3f2fd; color: #1976d2; }
         .btn-cook:hover { background: #bbdefb; }
-        
+
         .btn-ready { background: #e8f5e9; color: #388e3c; }
         .btn-ready:hover { background: #c8e6c9; }
-        
+
         .btn-done { background: #f5f5f5; color: #616161; }
         .btn-done:hover { background: #e0e0e0; }
 
@@ -123,7 +123,7 @@
                 <i class="ri-add-circle-line" style="color:var(--accent);"></i>
                 <h2 id="form-title">Add Item</h2>
             </div>
-            
+
             <form id="product-form">
                 <input type="hidden" id="edit-id"> <div class="form-group">
                     <label class="form-label">Item Name</label>
