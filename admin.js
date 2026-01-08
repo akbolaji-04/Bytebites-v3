@@ -8,12 +8,12 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
 onAuthStateChanged(auth, user => {
     if (user) {
         // User is logged in
-        console.log("Logged in as Admin:", user.email); // Check console for this email!
-        document.getElementById('admin-email').textContent = user.email;
+        console.log("Logged in as Admin:", user.email); // <--- LOOK FOR THIS IN CONSOLE
+        const emailEl = document.getElementById('admin-email');
+        if(emailEl) emailEl.textContent = user.email;
     } else {
-        // User is NOT logged in
+        // User is NOT logged in - SHOW MESSAGE INSTEAD OF REDIRECTING
         console.warn("No user found. You should be logged in.");
-        // We do NOT redirect instantly anymore. Instead, we show a button.
         document.body.innerHTML = `
             <div style="text-align:center; margin-top:50px; font-family:sans-serif;">
                 <h1>Access Denied</h1>
