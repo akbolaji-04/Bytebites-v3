@@ -50,7 +50,11 @@ I intentionally avoided frameworks here to strengthen my core JavaScript and DOM
 ---
 
 ## Screenshots
-(Add real screenshots here — this matters more than text)
+### Customer Menu
+![Customer Menu](screenshots/customer-menu.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
 
 ---
 
