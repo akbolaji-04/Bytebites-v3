@@ -15,7 +15,6 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// --- Auth Check ---
 onAuthStateChanged(auth, (user) => {
   if (user) {
     document.getElementById("admin-email").textContent = user.email;
@@ -27,7 +26,6 @@ onAuthStateChanged(auth, (user) => {
 document.getElementById("logout-btn").onclick = () =>
   signOut(auth).then(() => (window.location.href = "index.html"));
 
-// --- 1. Live Orders ---
 const ordersGrid = document.getElementById("orders-grid");
 onSnapshot(
   query(collection(db, "orders"), orderBy("createdAt", "desc")),
@@ -46,7 +44,7 @@ onSnapshot(
               order.status === "delivered" ? "opacity:0.6" : ""
             }">
                 <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-                    <b>#${id.slice(-4).toUpperCase()}</b> 
+                    <b>#${id.slice(-4).toUpperCase()}</b>
                     <span class="status-badge status-${order.status}">${
         order.status
       }</span>
@@ -54,7 +52,7 @@ onSnapshot(
                 <div style="margin-bottom:1rem; color:#555;">
                     ${order.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}
                 </div>
-                
+
                 ${
                   order.status !== "delivered"
                     ? `
@@ -84,19 +82,15 @@ window.updateOrderStatus = async (id, status) => {
   }
 };
 
-// --- 2. Live Menu Management (Edit/Delete) ---
 const menuList = document.getElementById("menu-list");
 
 function loadCollection(colName) {
   onSnapshot(collection(db, colName), (snap) => {
-    // We append to the list, so we might need to clear it first if we want a pure list,
-    // but since we have 2 collections (menuItems + chefSpecials), handling 2 listeners is tricky.
-    // Simplified: Just re-render everything when data changes.
+
     renderAllMenuItems();
   });
 }
 
-// We will store items in memory to render them combined
 let allItems = [];
 
 function setupMenuListeners() {
@@ -165,14 +159,12 @@ function renderAllMenuItems() {
   });
 }
 
-// --- 3. Form Logic (Add/Update) ---
 const form = document.getElementById("product-form");
 const submitBtn = document.getElementById("submit-btn");
 const cancelBtn = document.getElementById("cancel-btn");
 const formTitle = document.getElementById("form-title");
 const editIdInput = document.getElementById("edit-id");
 
-// Global Edit/Delete Functions
 window.deleteItem = async (id, col) => {
   if (confirm("Are you sure you want to delete this item?")) {
     try {
@@ -184,13 +176,12 @@ window.deleteItem = async (id, col) => {
 };
 
 window.editItem = (id, col) => {
-  // Find item data
+
   const item = [...itemsMap.menuItems, ...itemsMap.chefSpecials].find(
     (i) => i.id === id
   );
   if (!item) return;
 
-  // Populate Form
   document.getElementById("p-name").value = item.name;
   document.getElementById("p-desc").value = item.description;
   document.getElementById("p-price").value = item.price;
@@ -198,15 +189,13 @@ window.editItem = (id, col) => {
   document.getElementById("p-collection").value = col;
   document.getElementById("p-category").value = item.category || "all";
 
-  // Switch to Edit Mode
   editIdInput.value = id;
   formTitle.textContent = "Edit Item";
   submitBtn.textContent = "Update Item";
-  submitBtn.classList.remove("btn-primary"); // Change color to indicate edit
-  submitBtn.style.background = "#2196f3"; // Blue for update
+  submitBtn.classList.remove("btn-primary");
+  submitBtn.style.background = "#2196f3";
   cancelBtn.style.display = "block";
 
-  // Disable collection change during edit (simplifies logic)
   document.getElementById("p-collection").disabled = true;
 };
 
@@ -215,7 +204,7 @@ cancelBtn.onclick = () => {
   editIdInput.value = "";
   formTitle.textContent = "Add Item";
   submitBtn.textContent = "Publish Item";
-  submitBtn.style.background = ""; // Reset color
+  submitBtn.style.background = "";
   submitBtn.classList.add("btn-primary");
   cancelBtn.style.display = "none";
   document.getElementById("p-collection").disabled = false;
@@ -234,17 +223,17 @@ form.onsubmit = async (e) => {
     price: parseFloat(document.getElementById("p-price").value),
     imageURL: document.getElementById("p-image").value,
     category: document.getElementById("p-category").value,
-    createdAt: serverTimestamp(), // Updates timestamp on edit too
+    createdAt: serverTimestamp(),
   };
 
   try {
     if (id) {
-      // Update Existing
+
       await updateDoc(doc(db, col, id), data);
       alert("Item Updated!");
-      cancelBtn.click(); // Reset form
+      cancelBtn.click();
     } else {
-      // Add New
+
       await addDoc(collection(db, col), data);
       alert("Item Added!");
       form.reset();
@@ -256,5 +245,4 @@ form.onsubmit = async (e) => {
   }
 };
 
-// Start Listeners
 setupMenuListeners();

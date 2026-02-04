@@ -214,7 +214,6 @@ html.dark .navbar { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,2
 }
 .add-btn:hover { background: var(--accent); }
 
-/* Ensure signup / primary buttons remain legible when toggling dark mode */
 .btn-primary, .add-btn { color: var(--btn-primary-text, var(--btn-text)) !important; }
 
 .cart-drawer {
@@ -289,7 +288,6 @@ html.dark .close-cart-btn {
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; border: none; background: #F0F0F0; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
 
-/* generic close button (used by dynamic modals) */
 .close-btn { position: absolute; top: 1rem; right: 1rem; border: none; background: transparent; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--text-sub); }
 .close-btn:hover { background: rgba(0,0,0,0.04); transform: translateY(-2px); }
 html.dark .close-btn { color: #fff; }
@@ -388,7 +386,6 @@ html.dark input, html.dark textarea, html.dark select {
   flex-shrink: 0;
 }
 
-/* Footer */
 .site-footer {
   background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent), var(--bg-card);
   border-top: 1px solid rgba(0,0,0,0.04);
@@ -407,44 +404,40 @@ html.dark input, html.dark textarea, html.dark select {
 html.dark .site-footer { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent), var(--bg-card); border-top-color: rgba(255,255,255,0.04); color: var(--text-sub); }
 html.dark .site-footer .social a:hover { background: rgba(255,255,255,0.03); color: #fff; }
 
-
-/* --- Fix for Chef's Special Modal Image --- */
 .special-img {
   width: 100%;
-  height: 250px; /* Limits the height so it doesn't overflow */
-  object-fit: cover; /* Ensures image doesn't stretch/distort */
-  border-radius: 16px; /* Matches your theme's radius */
+  height: 250px;
+  object-fit: cover;
+  border-radius: 16px;
   margin-bottom: 1rem;
   box-shadow: var(--shadow-sm);
-  display: block; /* Removes potential inline-block spacing issues */
+  display: block;
 }
 
-/* Ensure the modal content is centered and doesn't get too tall */
 .modal-content {
-  max-height: 90vh; /* Prevents modal from being taller than screen */
-  overflow-y: auto; /* Adds scroll if content is too long */
+  max-height: 90vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
 html.dark .checkout-btn {
-  background: var(--accent) !important; /* Use Orange instead of White for better visibility */
-  color: #ffffff !important; /* Ensure text is white */
+  background: var(--accent) !important;
+  color: #ffffff !important;
 }
 
 html.dark .checkout-btn:hover {
   background: var(--accent-hover) !important;
 }
 
-/* --- Google Sign-In Button Styling --- */
 .btn-google {
-  background-color: #ffffff !important; /* Always white for brand recognition */
-  color: #1f1f1f !important; /* Standard Google dark gray text */
+  background-color: #ffffff !important;
+  color: #1f1f1f !important;
   border: 1px solid #dadce0;
-  border-radius: 50px; /* Matches your theme's roundness */
+  border-radius: 50px;
   padding: 0.8rem 1.5rem;
   font-size: 1rem;
-  font-weight: 500; /* Medium weight looks cleaner than bold */
+  font-weight: 500;
   font-family: 'Roboto', 'Inter', sans-serif;
   cursor: pointer;
   width: 100%;
@@ -453,14 +446,14 @@ html.dark .checkout-btn:hover {
   justify-content: center;
   gap: 0.75rem;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle depth */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   margin-top: 0.5rem;
 }
 
 .btn-google:hover {
   background-color: #f8f9fa !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  border-color: #d2e3fc; /* Subtle blue tint on border */
+  border-color: #d2e3fc;
   transform: translateY(-1px);
 }
 
@@ -470,13 +463,11 @@ html.dark .checkout-btn:hover {
   box-shadow: none;
 }
 
-/* Style the Google Icon specifically */
 .btn-google i {
   font-size: 1.25rem;
-  color: #1f1f1f; /* Match text */
+  color: #1f1f1f;
 }
 
-/* Dark Mode Adjustment: Keep it White/distinct */
 html.dark .btn-google {
   background-color: #ffffff !important;
   color: #1f1f1f !important;

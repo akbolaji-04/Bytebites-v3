@@ -23,24 +23,22 @@ function setDarkMode(on) {
   }
 }
 
-// initialize theme: prefer user's system setting unless they previously chose a theme
 const themePref = localStorage.getItem('theme');
 const mql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
 if (themePref) {
   setDarkMode(themePref === 'dark');
 } else if (mql) {
   setDarkMode(mql.matches);
-  // if system preference changes and user hasn't chosen manually, adapt
+
   try { mql.addEventListener ? mql.addEventListener('change', e => { if (!localStorage.getItem('theme')) setDarkMode(e.matches); }) : mql.addListener(e => { if (!localStorage.getItem('theme')) setDarkMode(e.matches); }); } catch (err) {}
 }
 if (darkToggle) {
   darkToggle.onclick = () => {
-    // user manually toggles -> override system preference
+
     setDarkMode(!html.classList.contains('dark'));
   };
 }
 
-// ensure Firebase auth uses persistent (local) persistence so users stay signed in
 try {
   setPersistence(auth, browserLocalPersistence).catch(err => {
     console.warn('Could not set auth persistence:', err);
@@ -148,7 +146,7 @@ function renderCarousel() {
   `;
 
   const wrapper = carouselTrack.firstElementChild;
-  // Ensure clicks anywhere on the carousel track open the special modal (robust on desktop)
+
  if (carouselTrack) {
     carouselTrack.onclick = () => {
       try { showSpecialModal(s); } catch (err) { console.error(err); }
@@ -168,8 +166,6 @@ function startCarouselAutoSlide() {
 const prevBtn = document.getElementById('carousel-prev');
 const nextBtn = document.getElementById('carousel-next');
 
-// Remove arrow button handlers (we now use swipe gestures). Keep variables if needed for progressive enhancement.
-
 function goToNextSpecial() {
   if (!specials.length) return;
   carouselIndex = (carouselIndex + 1) % specials.length;
@@ -183,7 +179,6 @@ function goToPrevSpecial() {
   startCarouselAutoSlide();
 }
 
-// Add pointer/touch swipe support on the carousel track
 if (carouselTrack) {
   let pointerDown = false;
   let startX = 0;
@@ -208,7 +203,7 @@ if (carouselTrack) {
     pointerDown = false;
     try { if (pointerId != null) carouselTrack.releasePointerCapture(pointerId); } catch (err) {}
     const dx = lastX - startX;
-    if (Math.abs(dx) < 40) return; // small move -> ignore
+    if (Math.abs(dx) < 40) return;
     if (dx < 0) goToNextSpecial(); else goToPrevSpecial();
   };
 
@@ -349,7 +344,7 @@ function addToCart(id, qty) {
   cart[id] = (cart[id] || 0) + qty;
   saveCart();
   renderCart();
-  //if (cartDrawer) cartDrawer.classList.add('open');
+
 }
 
 window.updateCartQty = (id, newQty) => {
@@ -463,21 +458,18 @@ document.addEventListener('click', (event) => {
   const cartDrawer = document.getElementById('cart-drawer');
   const cartBtn = document.getElementById('cart-btn');
 
- // 1. Prevent clicks INSIDE the drawer from closing it
 if (cartDrawer) {
   cartDrawer.addEventListener('click', (event) => {
-    event.stopPropagation(); // This stops the click from reaching the document listener
+    event.stopPropagation();
   });
 }
 
-// 2. Only close if clicking OUTSIDE
 document.addEventListener('click', (event) => {
   const cartBtn = document.getElementById('cart-btn');
 
-  // If cart is open AND click is NOT on the open button
-  if (cartDrawer && cartDrawer.classList.contains('open') && 
+  if (cartDrawer && cartDrawer.classList.contains('open') &&
       !cartBtn.contains(event.target)) {
-    
+
     cartDrawer.classList.remove('open');
   }
 });
